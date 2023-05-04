@@ -108,7 +108,7 @@ class StudentsGroup(models.Model):
     title = models.CharField(max_length=300)
 
     users = models.ManyToManyField(User, blank=True)
-    programs = models.ManyToManyField(Course, blank=True)
+    courses = models.ManyToManyField(Course, blank=True)
 
     def __str__(self) -> str:
         return self.title

@@ -30,6 +30,11 @@ urlpatterns = [
     path('login/', views.LoginView.as_view()),
     path('logout/', views.LogoutView.as_view()),
     path('profile/', views.ProfileView.as_view()),
-    path('profile/programs/', views.ProfileProgramsView.as_view()),
-    path('program/details/', views.CourseDataView.as_view()),
+    path('profile/courses/', views.ProfileCoursesView.as_view()),
+    path('courses/<int:course_id>/', views.CourseDetailView.as_view(), name='course_detail'),
+    # получить все степы по уроку
+    # получить материал по html ресурсу
+    # получить данные по тестам
+    # принять данные теста
+    # выдать статистику по курсу, теме, уроку
 ]

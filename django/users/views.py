@@ -7,9 +7,9 @@ from rest_framework import views
 from rest_framework.response import Response
 
 from users import serializers
-from users.models import StudentInfo, StudentsGroup, Program
+from users.models import StudentInfo, StudentsGroup
 from django.views import View
-from users.models import Course, CourseTopic, Lesson
+from users.models import Course
 
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -50,7 +50,7 @@ class ProfileView(generics.RetrieveAPIView):
     def get_object(self):
         return self.request.user
 
-class ProfileProgramsView(views.APIView):
+class ProfileCoursesView(views.APIView):
 
     def get(self, request):
         user = request.user
@@ -59,81 +59,62 @@ class ProfileProgramsView(views.APIView):
         groups = StudentsGroup.objects.filter(users=user)
 
         # Создать пустой список для хранения программ
-        programs = []
+        courses = []
 
         # Пройти по всем группам и добавить все связанные с ними программы в список
         for group in groups:
-            programs.extend(group.programs.all())
+            courses.extend(group.courses.all())
 
-        programs = set(programs)
+        courses = set(courses)
 
         # Вернуть список программ
-        serializer = serializers.ProgramSerializer(programs, many=True)
+        serializer = serializers.CourseSerializer(courses, many=True)
         return Response(serializer.data)
 
 
+class CourseDetailView(View):
+    def get(self, request, course_id):
+        # Get the course object based on the course_id parameter
+        course = Course.objects.get(id=course_id)
 
-class ProgramInfoView(views.APIView):
+        # Get all the topics for this course
+        topics = course.topics.all()
 
-    def get_all_subprograms(self, program):
-        subprograms = program.subprogram.all()
-        for subprogram in subprograms:
-            subprograms |= self.get_all_subprograms(subprogram)
-        return subprograms
-    
+        # Convert the topics to a list of dictionaries
+        topics_data = []
+        for topic in topics:
+            # Get all the lessons for this topic
+            lessons = topic.lessons.all()
 
-    def get(self, request):
-        program = Program.objects.get(id=1)
-        all_subprograms = self.get_all_subprograms(program)
-        subprograms = []
-        subprograms.append({
-            'program': program,
-            'all_subprograms': all_subprograms,
-        })
+            # Convert the lessons to a list of dictionaries
+            lessons_data = []
+            for lesson in lessons:
 
-        return subprograms
-
-
-class CourseDataView(View):
-    def get(self, request, *args, **kwargs):
-        # Get all courses
-        courses = Course.objects.all()
-
-        # Create a list to store course data
-        course_data = []
-
-        # Loop through each course and add its data to the list
-        for course in courses:
-            course_topics = []
-
-            # Loop through each topic for the course and add its data to the list
-            for topic in course.topics.all():
-                topic_lessons = []
-
-                # Loop through each lesson for the topic and add its data to the list
-                for lesson in topic.lessons.all():
-                    lesson_data = {
-                        'title': lesson.title,
-                        'description': lesson.description,
-                        'video_url': lesson.video_url,
-                    }
-                    topic_lessons.append(lesson_data)
-
-                topic_data = {
-                    'title': topic.title,
-                    'description': topic.description,
-                    'image': topic.image,
-                    'lessons': topic_lessons,
+                lesson_data = {
+                    'id': lesson.id,
+                    'title': lesson.title,
+                    'description': lesson.description,
                 }
-                course_topics.append(topic_data)
+                lessons_data.append(lesson_data)
 
-            course_data.append({
-                'title': course.title,
-                'description': course.description,
-                'image': course.image,
-                'topics': course_topics,
-            })
+            topic_data = {
+                'id': topic.id,
+                'title': topic.title,
+                'description': topic.description,
+                'image': topic.image,
+                'lessons': lessons_data,
+            }
+            topics_data.append(topic_data)
 
-        # Return course data as JSON response
-        return JsonResponse({'courses': course_data})
+        # Convert the course to a dictionary
+        course_data = {
+            'id': course.id,
+            'title': course.title,
+            'description': course.description,
+            'image': course.image,
+            'topics': topics_data,
+        }
+
+        # Return the course as a JSON response
+        return JsonResponse({'course': course_data})
 

@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 
-from users.models import Program
+from users.models import Course
 
 from rest_framework import serializers
 
@@ -43,10 +43,10 @@ class LoginSerializer(serializers.Serializer):
         return attrs
 
 
-class ProgramSerializer(serializers.ModelSerializer):
+class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Program
+        model = Course
         fields = [
             'title',
             'id'    
