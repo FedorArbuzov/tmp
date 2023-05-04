@@ -77,12 +77,38 @@ class Program(models.Model):
     def __str__(self) -> str:
         return self.title
 
+class Course(models.Model):
+    title = models.CharField(max_length=300)
+    description = models.TextField()
+    image = models.CharField(max_length=300, default="")
+
+    def __str__(self):
+        return self.title
+
+class CourseTopic(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='topics')
+    title = models.CharField(max_length=300)
+    description = models.TextField()
+    image = models.CharField(max_length=300, default="")
+
+    def __str__(self):
+        return self.title
+
+class Lesson(models.Model):
+    topic = models.ForeignKey(CourseTopic, on_delete=models.CASCADE, related_name='lessons')
+    title = models.CharField(max_length=300)
+    description = models.TextField()
+    video_url = models.CharField(max_length=300, default="")
+
+    def __str__(self):
+        return self.title
+
 
 class StudentsGroup(models.Model):
     title = models.CharField(max_length=300)
 
     users = models.ManyToManyField(User, blank=True)
-    programs = models.ManyToManyField(Program, blank=True)
+    programs = models.ManyToManyField(Course, blank=True)
 
     def __str__(self) -> str:
         return self.title

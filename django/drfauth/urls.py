@@ -30,4 +30,6 @@ urlpatterns = [
     path('login/', views.LoginView.as_view()),
     path('logout/', views.LogoutView.as_view()),
     path('profile/', views.ProfileView.as_view()),
+    path('profile/programs/', views.ProfileProgramsView.as_view()),
+    path('program/details/', views.CourseDataView.as_view()),
 ]

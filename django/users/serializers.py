@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 
+from users.models import Program
+
 from rest_framework import serializers
 
 class LoginSerializer(serializers.Serializer):
@@ -39,6 +41,16 @@ class LoginSerializer(serializers.Serializer):
         # It will be used in the view.
         attrs['user'] = user
         return attrs
+
+
+class ProgramSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Program
+        fields = [
+            'title',
+            'id'    
+        ]
 
 
 class UserSerializer(serializers.ModelSerializer):
