@@ -32,6 +32,8 @@ urlpatterns = [
     path('profile/', views.ProfileView.as_view()),
     path('profile/courses/', views.ProfileCoursesView.as_view()),
     path('courses/<int:course_id>/', views.CourseDetailView.as_view(), name='course_detail'),
+    path('lessons/<int:lesson_id>/steps/', views.LessonStepsView.as_view(), name='lesson_steps'),
+    path('steps/<int:step_id>/', views.StepDetailView.as_view(), name='step_detail'),
     # получить все степы по уроку
     # получить материал по html ресурсу
     # получить данные по тестам

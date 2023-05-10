@@ -7,7 +7,7 @@ from rest_framework import views
 from rest_framework.response import Response
 
 from users import serializers
-from users.models import StudentInfo, StudentsGroup
+from users.models import StudentInfo, StudentsGroup, Lesson, Step
 from django.views import View
 from users.models import Course
 
@@ -51,6 +51,7 @@ class ProfileView(generics.RetrieveAPIView):
         return self.request.user
 
 class ProfileCoursesView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
         user = request.user
@@ -72,7 +73,9 @@ class ProfileCoursesView(views.APIView):
         return Response(serializer.data)
 
 
-class CourseDetailView(View):
+class CourseDetailView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get(self, request, course_id):
         # Get the course object based on the course_id parameter
         course = Course.objects.get(id=course_id)
@@ -118,3 +121,60 @@ class CourseDetailView(View):
         # Return the course as a JSON response
         return JsonResponse({'course': course_data})
 
+
+class LessonStepsView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, lesson_id):
+        # Get the lesson object based on the lesson_id parameter
+        lesson = Lesson.objects.get(id=lesson_id)
+
+        # Get all the steps for this lesson
+        steps = lesson.steps.all()
+
+        # Convert the steps to a list of dictionaries
+        steps_data = []
+        for step in steps:
+            step_data = {
+                'id': step.id,
+                'title': step.name,
+            }
+            steps_data.append(step_data)
+
+        # Return the steps as a JSON response
+        return JsonResponse({'steps': steps_data})
+
+
+class StepDetailView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, step_id):
+        # Get the step object based on the step_id parameter
+        step = Step.objects.get(id=step_id)
+
+        # Get the test for this step, if it exists
+        test = step.test
+        test_data = None
+        if test:
+            test_data = {
+                'id': test.id,
+            }
+
+        # Get the HTML page for this step, if it exists
+        html_page = step.html
+        html_page_data = None
+        if html_page:
+            html_page_data = {
+                'id': html_page.id,
+            }
+
+        # Convert the step to a dictionary
+        step_data = {
+            'id': step.id,
+            'name': step.name,
+            'test': test_data,
+            'html_page': html_page_data,
+        }
+
+        # Return the step as a JSON response
+        return JsonResponse({'step': step_data})

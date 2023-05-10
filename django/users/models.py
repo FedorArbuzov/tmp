@@ -54,29 +54,6 @@ class Tag(models.Model):
         return self.name
 
 
-class Step(models.Model):
-    name = models.CharField(max_length=300, default='')
-
-    test = models.ManyToManyField(Test, blank=True)
-    html = models.ManyToManyField(HtmlPage, blank=True)
-
-    def __str__(self) -> str:
-        return self.name
-
-
-class Program(models.Model):
-    subprogram = models.ManyToManyField("self", blank=True)
-
-    title = models.CharField(max_length=300)
-    description = models.CharField(max_length=300)
-    image = models.CharField(max_length=300, default="")
-
-    tags = models.ManyToManyField(Tag, blank=True)
-    steps = models.ManyToManyField(Step, blank=True)
-
-    def __str__(self) -> str:
-        return self.title
-
 class Course(models.Model):
     title = models.CharField(max_length=300)
     description = models.TextField()
@@ -103,6 +80,15 @@ class Lesson(models.Model):
     def __str__(self):
         return self.title
 
+
+class Step(models.Model):
+    name = models.CharField(max_length=300, default='')
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='steps', default=None)
+    test = models.OneToOneField(Test, on_delete=models.CASCADE, related_name='step', blank=True, null=True)
+    html = models.OneToOneField(HtmlPage, on_delete=models.CASCADE, related_name='step', blank=True, null=True)
+
+    def __str__(self) -> str:
+        return self.name
 
 class StudentsGroup(models.Model):
     title = models.CharField(max_length=300)
