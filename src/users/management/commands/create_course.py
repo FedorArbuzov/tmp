@@ -1,9 +1,9 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from users.models import Course, CourseTopic, Lesson
+from users.models import Course, Topic, Lesson
 
 class Command(BaseCommand):
-    help = 'Create test data for the Course, CourseTopic and Lesson models'
+    help = 'Create test data for the Course, Topic and Lesson models'
 
     def handle(self, *args, **kwargs):
         # Create a new course
@@ -14,14 +14,14 @@ class Command(BaseCommand):
         )
 
         # Create some topics for the course
-        topic1 = CourseTopic.objects.create(
+        topic1 = Topic.objects.create(
             course=course,
             title='Python Basics',
             description='Learn the basics of Python programming',
             image='https://example.com/python-basics.jpg',
         )
 
-        topic2 = CourseTopic.objects.create(
+        topic2 = Topic.objects.create(
             course=course,
             title='Functions and Loops',
             description='Learn how to use functions and loops in Python',

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Test, Question, Answer, HtmlPage, Tag, Step, StudentsGroup, StudentInfo, Course, CourseTopic, Lesson
+from .models import Test, Question, Answer, HtmlPage, Tag, Step, StudentsGroup, StudentInfo, Course, Topic, Lesson
 
 admin.site.register(Test)
 admin.site.register(Question)
@@ -14,7 +14,7 @@ admin.site.register(StudentsGroup)
 admin.site.register(StudentInfo)
 
 admin.site.register(Course)
-admin.site.register(CourseTopic)
+admin.site.register(Topic)
 admin.site.register(Lesson)
 
 

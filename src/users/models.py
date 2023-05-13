@@ -1,12 +1,13 @@
 from django.db import models
 
 from django.contrib.auth.models import User
+from django.db.models import JSONField
 
 # Create your models here.
 
 
 class Test(models.Model):
-    name = models.CharField(max_length=50)
+    title = models.CharField(max_length=50)
     description = models.CharField(max_length=250)
     attempts_number = models.IntegerField(null=True, blank=True)
     assessment_method = models.BooleanField()
@@ -15,13 +16,15 @@ class Test(models.Model):
     pub_date = models.DateTimeField('date published')
 
     def __str__(self):
-        return self.name
+        return self.title
 
 
 class Question(models.Model):
     test = models.ForeignKey(Test, on_delete=models.CASCADE)
     text = models.CharField(max_length=250)
     comment = models.CharField(max_length=250)
+    order_number = models.IntegerField(default=0)
+    weight = models.IntegerField(default=0)
     attachment_link = models.CharField(max_length=250)
 
     def __str__(self):
@@ -31,7 +34,8 @@ class Question(models.Model):
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     text = models.CharField(max_length=250)
-    is_right = models.BooleanField()
+    order_number = models.IntegerField(default=0)
+    weight = models.IntegerField(default=0)
     comment = models.CharField(max_length=250)
 
     def __str__(self):
@@ -62,7 +66,7 @@ class Course(models.Model):
     def __str__(self):
         return self.title
 
-class CourseTopic(models.Model):
+class Topic(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='topics')
     title = models.CharField(max_length=300)
     description = models.TextField()
@@ -72,7 +76,7 @@ class CourseTopic(models.Model):
         return self.title
 
 class Lesson(models.Model):
-    topic = models.ForeignKey(CourseTopic, on_delete=models.CASCADE, related_name='lessons')
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='lessons')
     title = models.CharField(max_length=300)
     description = models.TextField()
     video_url = models.CharField(max_length=300, default="")
@@ -82,13 +86,13 @@ class Lesson(models.Model):
 
 
 class Step(models.Model):
-    name = models.CharField(max_length=300, default='')
+    title = models.CharField(max_length=300, default='')
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='steps', default=None)
     test = models.OneToOneField(Test, on_delete=models.CASCADE, related_name='step', blank=True, null=True)
     html = models.OneToOneField(HtmlPage, on_delete=models.CASCADE, related_name='step', blank=True, null=True)
 
     def __str__(self) -> str:
-        return self.name
+        return self.title
 
 class StudentsGroup(models.Model):
     title = models.CharField(max_length=300)
@@ -107,3 +111,18 @@ class StudentInfo(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
+
+
+class UserAnswer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True)
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, blank=True, null=True)
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, blank=True, null=True)
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, blank=True, null=True)
+    html = models.ForeignKey(HtmlPage, on_delete=models.CASCADE, blank=True, null=True)
+    answers = JSONField(blank=True, null=True)
+    total_result = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.test.name}"

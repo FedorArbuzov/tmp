@@ -1,3 +1,5 @@
+import random
+
 from django.contrib.auth import login, logout
 
 from rest_framework import generics
@@ -7,17 +9,12 @@ from rest_framework import views
 from rest_framework.response import Response
 
 from users import serializers
-from users.models import StudentInfo, StudentsGroup, Lesson, Step
-from django.views import View
-from users.models import Course
-
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
+from users.models import Course, StudentInfo, StudentsGroup, Course, Topic, Lesson, Step, Test, UserAnswer
+from users.count_total_test_weight import calculate_test_results
 
 from django.http import JsonResponse
 
 from rest_framework_simplejwt.tokens import RefreshToken
-from datetime import timedelta
 
 
 class LoginView(views.APIView):
@@ -96,6 +93,8 @@ class CourseDetailView(views.APIView):
                 lesson_data = {
                     'id': lesson.id,
                     'title': lesson.title,
+                    'total': 5,
+                    'completed': 5,
                     'description': lesson.description,
                 }
                 lessons_data.append(lesson_data)
@@ -105,6 +104,8 @@ class CourseDetailView(views.APIView):
                 'title': topic.title,
                 'description': topic.description,
                 'image': topic.image,
+                'total': 5,
+                'completed': 5,
                 'lessons': lessons_data,
             }
             topics_data.append(topic_data)
@@ -114,6 +115,8 @@ class CourseDetailView(views.APIView):
             'id': course.id,
             'title': course.title,
             'description': course.description,
+            'total': 5,
+            'completed': 5,
             'image': course.image,
             'topics': topics_data,
         }
@@ -178,3 +181,126 @@ class StepDetailView(views.APIView):
 
         # Return the step as a JSON response
         return JsonResponse({'step': step_data})
+
+
+class TaskTestView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, test_id):
+        try:
+            test = Test.objects.get(id=test_id)
+        except Test.DoesNotExist:
+            return JsonResponse({'error': 'Test does not exist'})
+
+        questions = []
+        for question in test.question_set.all():
+            answers = []
+            for answer in question.answer_set.all():
+                answers.append({
+                    'id': answer.id,
+                    'text': answer.text,
+                    'order_number': answer.order_number,
+                    'selected': None,
+                    'weight': answer.weight,
+                    'comment': answer.comment
+                })
+            questions.append({
+                'id': question.id,
+                'text': question.text,
+                'comment': question.comment,
+                'order_number': question.order_number,
+                'weight': question.weight,
+                'attachment_link': question.attachment_link,
+                'options': answers
+            })
+
+        if test.shuffle:
+            random.shuffle(questions)
+
+        data = {
+            'id': test.id,
+            'name': test.name,
+            'description': test.description,
+            'questions': questions
+        }
+
+        # Return the step as a JSON response
+        return JsonResponse({'result': data})
+
+
+class CheckTaskTestView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, test_id):
+        
+        data = request.data
+        
+        result_score = calculate_test_results(data)
+        user = request.user
+        course = Course.objects.get(id=data['result']['course'])
+        course_topic = Topic.objects.get(id=data['result']['topic'])
+        lesson = Lesson.objects.get(id=data['result']['lesson'])
+        test = Test.objects.get(id=test_id)
+
+        user_answer, is_created = UserAnswer.objects.get_or_create(user=user, course=course, topic=course_topic, lesson=lesson, test=test)
+        user_answer.answers = data
+
+        # добавить логику сохранения максимального значения или последнего
+        user_answer.total_result = result_score
+        print(user_answer, is_created)
+
+        # Return the step as a JSON response
+        return JsonResponse({'status': 'ok'})
+
+
+class ResultsTaskTestView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    
+    def get(self, request, test_id):
+        user = request.user
+        test = Test.objects.get(id=test_id)
+
+        # Ищем ответы пользователя на заданный тест
+        user_answer = UserAnswer.objects.filter(user=user, test=test).first()
+
+        if user_answer:
+            # Если ответы найдены, возвращаем их в виде JSON
+            return JsonResponse(user_answer.answers)
+        else:
+            # Если ответы не найдены, возвращаем ошибку
+            return JsonResponse({'error': 'Answers not found'})
+
+
+# добавить метод получения статистик по всем разделам
+
+
+
+class StatsView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    
+    def get(self, request):
+        section_type = request.GET["section_type"]
+        section_id = request.GET["section_id"]
+        if section_type == 'course':
+            return JsonResponse({'results': {
+                'stats': [{
+                    'title': 'Русский язык',
+                    'passed': 12,
+                    'total': 20,
+                    'average_score': 80,
+                    'group_score': 95
+                }],
+            }})
+        elif section_type == 'lesson':
+            return JsonResponse({'results': {
+                'stats': [{
+                    'title': 'Тест методы изучения биологии',
+                    'average_score': 80,
+                    'group_score': 95,
+                    'attempts': 1,
+                    'date': '06.04.23',
+                    'time': '02:03:00'
+                }],
+            }})
+
+    

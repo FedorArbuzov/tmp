@@ -16,7 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from users import views
+from users.views import views
+from users.views import breadrumbs_vews
+
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -34,6 +36,11 @@ urlpatterns = [
     path('courses/<int:course_id>/', views.CourseDetailView.as_view(), name='course_detail'),
     path('lessons/<int:lesson_id>/steps/', views.LessonStepsView.as_view(), name='lesson_steps'),
     path('steps/<int:step_id>/', views.StepDetailView.as_view(), name='step_detail'),
+    path('test/<int:test_id>/', views.TaskTestView.as_view(), name='test_view'),
+    path('test/check/<int:test_id>/', views.CheckTaskTestView.as_view(), name='test_view'),
+    path('test/results/<int:test_id>/', views.ResultsTaskTestView.as_view(), name='test_view'),
+    path('stats/', views.StatsView.as_view(), name='stats_view'),
+    path('breadcrumbs/', breadrumbs_vews.BreadcrumbsView.as_view(), name='breadcrumbs_view')
     # получить все степы по уроку
     # получить материал по html ресурсу
     # получить данные по тестам
