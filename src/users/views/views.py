@@ -2,7 +2,6 @@ import random
 
 from django.contrib.auth import login, logout
 
-from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework import views
@@ -10,7 +9,7 @@ from rest_framework.response import Response
 
 from users import serializers
 from users.models import Course, StudentInfo, StudentsGroup, Course, Topic, Lesson, Step, Test, UserAnswer
-from users.count_total_test_weight import calculate_test_results
+from users.utils.count_total_test_weight import calculate_test_results
 
 from django.http import JsonResponse
 
@@ -40,12 +39,6 @@ class LogoutView(views.APIView):
         logout(request)
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
-
-class ProfileView(generics.RetrieveAPIView):
-    serializer_class = serializers.UserSerializer
-
-    def get_object(self):
-        return self.request.user
 
 class ProfileCoursesView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -225,7 +218,7 @@ class TaskTestView(views.APIView):
         }
 
         # Return the step as a JSON response
-        return JsonResponse({'result': data})
+        return JsonResponse(data)
 
 
 class CheckTaskTestView(views.APIView):

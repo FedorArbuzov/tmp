@@ -105,12 +105,26 @@ class StudentsGroup(models.Model):
 
 
 class StudentInfo(models.Model):
+    avatar = models.CharField(max_length=100, default=None)
+    date_birth = models.DateField(default=None)
+    mail = models.CharField(max_length=100, default=None)
+    responsible_1_fio = models.CharField(max_length=100, default=None)
+    responsible_2_fio = models.CharField(max_length=100, default=None)
+    responsible_1_phone = models.CharField(max_length=100, default=None)
+    responsible_2_phone = models.CharField(max_length=100, default=None)
+    responsible_1_mail = models.CharField(max_length=100, default=None)
+    responsible_2_mail = models.CharField(max_length=100, default=None)
+    
     phone = models.CharField(max_length=100)
+    
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
         primary_key=True,
     )
+
+    def __str__(self):
+        return self.user.username
 
 
 class UserAnswer(models.Model):
