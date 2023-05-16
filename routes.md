@@ -129,7 +129,7 @@ GET http://px-dev-backend.platonics.ru:8080/lessons/1/
         "attempts_number_used": 1,
         "num_of_questions": 2,
         "time_spended": 15,
-        "persent": 50
+        "perсent": 50
     }
 }
 ```
@@ -157,6 +157,7 @@ GET http://px-dev-backend.platonics.ru:8080/steps/1/
 GET http://px-dev-backend.platonics.ru:8080/test/1/
 
 ```
+
 ```
 
 

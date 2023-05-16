@@ -129,7 +129,7 @@ def get_step_test(step, user):
         'attempts_number_used': len(answer),
         'num_of_questions': Question.objects.filter(test=step.test).count(),
         'time_spended': answer.time_spended,
-        'persent': answer.total_result
+        'perсent': answer.total_result
     }
 
 def get_step_id_or_none(lesson, order):
