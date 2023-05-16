@@ -12,7 +12,7 @@ class Test(models.Model):
     attempts_number = models.IntegerField(null=True, blank=True)
     assessment_method = models.BooleanField()
     shuffle = models.BooleanField()
-
+    end_date = models.DateField('deadline date')
     pub_date = models.DateTimeField('date published')
 
     def __str__(self):

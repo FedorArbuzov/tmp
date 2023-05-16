@@ -46,7 +46,6 @@ urlpatterns = [
     path('test/<int:test_id>/', test_views.TaskTestView.as_view(), name='test_view'),
     path('test/check/<int:test_id>/', test_views.CheckTaskTestView.as_view(), name='test_view'),
     path('test/results/<int:test_id>/', test_views.ResultsTaskTestView.as_view(), name='test_view'),
-    path('stats/', views.StatsView.as_view(), name='stats_view'),
     path('breadcrumbs/', breadrumbs_views.BreadcrumbsView.as_view(), name='breadcrumbs_view')
     # получить все степы по уроку
     # получить материал по html ресурсу

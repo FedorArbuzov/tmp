@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.db.models import Avg
 
 
-from users.models import UserAnswer, Course, Step, StudentsGroup
+from users.models import UserAnswer, Course, Topic, Lesson, Step, StudentsGroup
 
 def get_course_users(course):
     # Получаем все группы, связанные с курсом
@@ -47,6 +47,22 @@ def get_data_course_user(user, course):
         'avg': round(user_answers_avg) if user_answers_avg else 0
     }
 
+def get_stats_for_course(course_id, user):
+    course = Course.objects.get(id=course_id)
+    topics = course.topics.all()
+
+    # Получаем среднее значение поля total_result для каждого топика
+    average_total_result_by_topic = {}
+    for topic in topics:
+        user_answers = UserAnswer.objects.filter(topic=topic).exclude(test=None)
+        current_user_answers = UserAnswer.objects.filter(topic=topic, user=user).exclude(test=None)
+        average_total_result_by_topic[topic] = {
+            'total_avg': user_answers.aggregate(Avg('total_result'))['total_result__avg'],
+            'avg': current_user_answers.aggregate(Avg('total_result'))['total_result__avg']
+        }
+
+    # Возвращаем результат
+    return average_total_result_by_topic
 
 class StatsView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -66,6 +82,8 @@ class StatsDetailView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
+        model_type = request.GET.get('model_type')
+        model_id = request.GET.get('model_type')
         user = request.user
         courses = get_user_courses(user)
         results = []
@@ -79,7 +97,7 @@ class StatsDetailView(views.APIView):
                 if course_user == user:
                     user_results = user_stats
 
-            user_results['course_avg'] = round(course_avg / len(users))     
+            user_results['total_avg'] = round(course_avg / len(users))     
             results.append(user_results)
         
         return JsonResponse(results, safe=False)

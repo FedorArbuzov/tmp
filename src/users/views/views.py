@@ -122,9 +122,11 @@ def get_step_test(step, user):
         return None
     answer = UserAnswer.objects.filter(user=user, test=step.test).last()
     return {
+        'id': step.test.id,
         'title': step.test.title,
         'description': step.test.description,
         'attempts_number': step.test.attempts_number,
+        'attempts_number_used': len(answer),
         'num_of_questions': Question.objects.filter(test=step.test).count(),
         'time_spended': answer.time_spended,
         'persent': answer.total_result
@@ -191,65 +193,14 @@ class StepDetailView(views.APIView):
     def get(self, request, step_id):
         # Get the step object based on the step_id parameter
         step = Step.objects.get(id=step_id)
-
-        # Get the test for this step, if it exists
-        test = step.test
-        test_data = None
-        if test:
-            test_data = {
-                'id': test.id,
-            }
-
-        # Get the HTML page for this step, if it exists
-        html_page = step.html
-        html_page_data = None
-        if html_page:
-            html_page_data = {
-                'id': html_page.id,
-            }
-
-        # Convert the step to a dictionary
-        step_data = {
-            'id': step.id,
-            'name': step.name,
-            'test': test_data,
-            'html_page': html_page_data,
-        }
-
-        # Return the step as a JSON response
-        return JsonResponse({'step': step_data})
-
-
-# добавить метод получения статистик по всем разделам
-
-
-
-class StatsView(views.APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    
-    def get(self, request):
-        section_type = request.GET["section_type"]
-        section_id = request.GET["section_id"]
-        if section_type == 'course':
-            return JsonResponse({'results': {
-                'stats': [{
-                    'title': 'Русский язык',
-                    'passed': 12,
-                    'total': 20,
-                    'average_score': 80,
-                    'group_score': 95
-                }],
-            }})
-        elif section_type == 'lesson':
-            return JsonResponse({'results': {
-                'stats': [{
-                    'title': 'Тест методы изучения биологии',
-                    'average_score': 80,
-                    'group_score': 95,
-                    'attempts': 1,
-                    'date': '06.04.23',
-                    'time': '02:03:00'
-                }],
-            }})
-
-    
+        step_data = get_step_data(step, request.user)
+        if step_data['html']:
+            UserAnswer.objects.create(
+                user=request.user, 
+                course=step.lesson.topic.course, 
+                topic=step.lesson.topic, 
+                lesson=step.lesson, 
+                step=step
+            )
+        # Return the steps as a JSON response
+        return JsonResponse(step_data)
