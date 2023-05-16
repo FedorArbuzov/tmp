@@ -29,25 +29,3 @@ class ProfileView(views.APIView):
                 'mail': student_info.responsible_2_mail
             }
         })
-
-
-class ProfileAvatarView(views.APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def delete(self, request):
-        student_info = StudentInfo.objects.get(user=request.user)
-        student_info.avatar = None
-        student_info.save()
-        return JsonResponse({'status': 'ok'})        
-
-    def post(self, request):
-        student_info = StudentInfo.objects.get(user=request.user)
-        # Получаем base64-строку файла из POST-запроса
-        base64_file = request.POST.get('file')
-        file_name = request.POST.get('file_name')
-        # Сохраняем файл в MinIO
-        new_avatar_link = save_avatar_in_minio(base64_file, file_name)
-        student_info.avatar = new_avatar_link
-        student_info.save()
-        # Возвращаем ответ
-        return JsonResponse({'status': 'ok'})

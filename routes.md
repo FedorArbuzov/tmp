@@ -61,8 +61,9 @@ GET http://px-dev-backend.platonics.ru:8080/courses/1/
                 "name": "Introduction to Python",
                 "isOpened": true,
                 "isActive": true,
-                "total": 3,
-                "completed": 3,
+                "isCompleted": true,
+                "totalTasks": 3,
+                "completedTasks": 3,
                 "description": "Learn about Python and the Python interpreter"
             },
             {
@@ -71,8 +72,9 @@ GET http://px-dev-backend.platonics.ru:8080/courses/1/
                 "name": "Variables and Data Types",
                 "isOpened": false,
                 "isActive": false,
-                "total": 2,
-                "completed": 0,
+                "isCompleted": false,
+                "totalTasks": 2,
+                "completedTasks": 0,
                 "description": "Learn how to use variables and data types in Python"
             }
         ]
@@ -90,8 +92,9 @@ GET http://px-dev-backend.platonics.ru:8080/courses/1/
                 "name": "Introduction to Python",
                 "isOpened": false,
                 "isActive": false,
-                "total": 3,
-                "completed": 0,
+                "isCompleted": false,
+                "totalTasks": 3,
+                "completedTasks": 0,
                 "description": "Learn about Python and the Python interpreter"
             },
             {
@@ -100,8 +103,9 @@ GET http://px-dev-backend.platonics.ru:8080/courses/1/
                 "name": "Variables and Data Types",
                 "isOpened": false,
                 "isActive": false,
-                "total": 2,
-                "completed": 0,
+                "isCompleted": false,
+                "totalTasks": 2,
+                "completedTasks": 0,
                 "description": "Learn how to use variables and data types in Python"
             }
         ]
@@ -157,8 +161,216 @@ GET http://px-dev-backend.platonics.ru:8080/steps/1/
 GET http://px-dev-backend.platonics.ru:8080/test/1/
 
 ```
-
+{
+    "id": 1,
+    "name": "Test 1",
+    "description": "Description 1",
+    "questions": [
+        {
+            "id": 1,
+            "text": "Question 1",
+            "comment": "Comment 1",
+            "order_number": 0,
+            "weight": 50,
+            "media": "https://example.com/file1.pdf",
+            "multiple": false,
+            "options": [
+                {
+                    "id": 1,
+                    "text": "Answer 1",
+                    "order_number": 0,
+                    "selected": null,
+                    "weight": 40,
+                    "comment": "Comment 1"
+                },
+                {
+                    "id": 2,
+                    "text": "Answer 2",
+                    "order_number": 1,
+                    "selected": null,
+                    "weight": -50,
+                    "comment": "Comment 2"
+                },
+                {
+                    "id": 3,
+                    "text": "Answer 3",
+                    "order_number": 2,
+                    "selected": null,
+                    "weight": 60,
+                    "comment": "Comment 3"
+                },
+                {
+                    "id": 4,
+                    "text": "Answer 4",
+                    "order_number": 3,
+                    "selected": null,
+                    "weight": -50,
+                    "comment": "Comment 4"
+                }
+            ],
+            "is_correct": null
+        },
+        {
+            "id": 2,
+            "text": "Question 2",
+            "comment": "Comment 2",
+            "order_number": 1,
+            "weight": 50,
+            "media": null,
+            "multiple": true,
+            "options": [
+                {
+                    "id": 5,
+                    "text": "Answer 5",
+                    "order_number": 0,
+                    "selected": null,
+                    "weight": 30,
+                    "comment": "Comment 1"
+                },
+                {
+                    "id": 6,
+                    "text": "Answer 6",
+                    "order_number": 1,
+                    "selected": null,
+                    "weight": -20,
+                    "comment": "Comment 2"
+                },
+                {
+                    "id": 7,
+                    "text": "Answer 7",
+                    "order_number": 2,
+                    "selected": null,
+                    "weight": 70,
+                    "comment": "Comment 3"
+                },
+                {
+                    "id": 8,
+                    "text": "Answer 8",
+                    "order_number": 3,
+                    "selected": null,
+                    "weight": -80,
+                    "comment": "Comment 4"
+                }
+            ],
+            "is_correct": null
+        }
+    ]
+}
 ```
 
+Этот метод отдает данные для отрисовки теста
 
+
+## Отправить ответ
+
+GET http://px-dev-backend.platonics.ru:8080/test/check/1/
+
+```
+{
+    "time_spended": 15,
+    "questions": {
+        "1": ["1", "3"],
+        "2": ["2", "4"]
+    }
+}
+```
+
+Здесь time_spended время в секундах, questions - набор из ответов на вопросы
+
+## Посмотреть решения теста
+
+GET http://px-dev-backend.platonics.ru:8080/test/results/1/
+
+```
+[
+    {
+        "id": 1,
+        "text": "Question 1",
+        "media": "https://example.com/file1.pdf",
+        "weight": 50,
+        "comment": "Comment 1",
+        "options": [
+            {
+                "id": 1,
+                "text": "Answer 1",
+                "weight": 40,
+                "comment": "Comment 1",
+                "selected": true,
+                "order_number": 0
+            },
+            {
+                "id": 2,
+                "text": "Answer 2",
+                "weight": -50,
+                "comment": "Comment 2",
+                "selected": null,
+                "order_number": 1
+            },
+            {
+                "id": 3,
+                "text": "Answer 3",
+                "weight": 60,
+                "comment": "Comment 3",
+                "selected": true,
+                "order_number": 2
+            },
+            {
+                "id": 4,
+                "text": "Answer 4",
+                "weight": -50,
+                "comment": "Comment 4",
+                "selected": null,
+                "order_number": 3
+            }
+        ],
+        "multiple": false,
+        "is_correct": true,
+        "order_number": 0
+    },
+    {
+        "id": 2,
+        "text": "Question 2",
+        "media": null,
+        "weight": 50,
+        "comment": "Comment 2",
+        "options": [
+            {
+                "id": 5,
+                "text": "Answer 5",
+                "weight": 30,
+                "comment": "Comment 1",
+                "selected": null,
+                "order_number": 0
+            },
+            {
+                "id": 6,
+                "text": "Answer 6",
+                "weight": -20,
+                "comment": "Comment 2",
+                "selected": null,
+                "order_number": 1
+            },
+            {
+                "id": 7,
+                "text": "Answer 7",
+                "weight": 70,
+                "comment": "Comment 3",
+                "selected": null,
+                "order_number": 2
+            },
+            {
+                "id": 8,
+                "text": "Answer 8",
+                "weight": -80,
+                "comment": "Comment 4",
+                "selected": null,
+                "order_number": 3
+            }
+        ],
+        "multiple": true,
+        "is_correct": false,
+        "order_number": 1
+    }
+]
+```
 
