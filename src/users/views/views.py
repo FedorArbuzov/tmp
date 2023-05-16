@@ -8,7 +8,7 @@ from rest_framework import views
 from rest_framework.response import Response
 
 from users import serializers
-from users.models import Course, StudentInfo, StudentsGroup, Course, Topic, Lesson, Step, Test, UserAnswer
+from users.models import Course, StudentInfo, StudentsGroup, Course, Topic, Lesson, Step, Test, Question, UserAnswer
 from users.utils.count_total_test_weight import calculate_test_results
 
 from django.http import JsonResponse
@@ -69,6 +69,8 @@ class CourseDetailView(views.APIView):
     def get(self, request, course_id):
         # Get the course object based on the course_id parameter
         course = Course.objects.get(id=course_id)
+        user_answers = UserAnswer.objects.filter(user=request.user, course=course)
+        last_user_answer = user_answers.last()
 
         # Get all the topics for this course
         topics = course.topics.all()
@@ -78,45 +80,73 @@ class CourseDetailView(views.APIView):
         for topic in topics:
             # Get all the lessons for this topic
             lessons = topic.lessons.all()
+            topic_steps_total = 0
+            topic_steps_complited = 0
 
             # Convert the lessons to a list of dictionaries
             lessons_data = []
             for lesson in lessons:
 
+                steps_length = lesson.steps.count()
+                topic_steps_total += steps_length
+                steps_completed_length = user_answers.filter(lesson=lesson).count()
+                topic_steps_complited += steps_completed_length
                 lesson_data = {
                     'id': lesson.id,
-                    'title': lesson.title,
-                    'total': 5,
-                    'completed': 5,
+                    'order_number': lesson.order_number,
+                    'name': lesson.title,
+                    'isOpened': True if steps_completed_length > 0 else False,
+                    'isActive': True if last_user_answer.lesson == lesson else False,
+                    'total': steps_length,
+                    'completed': steps_completed_length,
                     'description': lesson.description,
                 }
                 lessons_data.append(lesson_data)
 
             topic_data = {
                 'id': topic.id,
-                'title': topic.title,
-                'description': topic.description,
-                'image': topic.image,
-                'total': 5,
-                'completed': 5,
+                'name': topic.title,
+                'isFinished': True if topic_steps_complited == topic_steps_total else False,
+                'isStarted': True if topic_steps_complited > 0 else False,
+                'percentageCompleted': round(topic_steps_complited / topic_steps_total * 100),
                 'lessons': lessons_data,
             }
             topics_data.append(topic_data)
 
-        # Convert the course to a dictionary
-        course_data = {
-            'id': course.id,
-            'title': course.title,
-            'description': course.description,
-            'total': 5,
-            'completed': 5,
-            'image': course.image,
-            'topics': topics_data,
-        }
-
         # Return the course as a JSON response
-        return JsonResponse({'course': course_data})
+        return JsonResponse(topics_data, safe=False)
 
+
+def get_step_test(step, user):
+    if not step.test:
+        return None
+    answer = UserAnswer.objects.filter(user=user, test=step.test).last()
+    return {
+        'title': step.test.title,
+        'description': step.test.description,
+        'attempts_number': step.test.attempts_number,
+        'num_of_questions': Question.objects.filter(test=step.test).count(),
+        'time_spended': answer.time_spended,
+        'persent': answer.total_result
+    }
+
+def get_step_id_or_none(lesson, order):
+    try:
+        s = Step.objects.get(lesson=lesson, order_number=order)
+        return s.id
+    except Step.DoesNotExist:
+        return None
+
+
+def get_step_data(step, user):
+    print(step)
+    return {
+        'previous': get_step_id_or_none(step.lesson, step.order_number - 1),
+        'next': get_step_id_or_none(step.lesson, step.order_number + 1),
+        'id': step.id,
+        'html': None if not step.html else step.html.content,
+        'test': get_step_test(step, user)
+    }
 
 class LessonStepsView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -124,21 +154,35 @@ class LessonStepsView(views.APIView):
     def get(self, request, lesson_id):
         # Get the lesson object based on the lesson_id parameter
         lesson = Lesson.objects.get(id=lesson_id)
+        user_answers = UserAnswer.objects.filter(user=request.user, lesson=lesson)
 
         # Get all the steps for this lesson
         steps = lesson.steps.all()
 
         # Convert the steps to a list of dictionaries
-        steps_data = []
+        step_data = {}
         for step in steps:
-            step_data = {
-                'id': step.id,
-                'title': step.name,
-            }
-            steps_data.append(step_data)
-
+            is_step_done = user_answers.filter(step=step)
+            if len(is_step_done) > 0:
+                continue
+            else:
+                step_data = step
+                break
+            
+        if not step_data:
+            step_data = step
+        current_step = step
+        step_data = get_step_data(step_data, request.user)
+        if step_data['html']:
+            UserAnswer.objects.create(
+                user=request.user, 
+                course=current_step.lesson.topic.course, 
+                topic=current_step.lesson.topic, 
+                lesson=current_step.lesson, 
+                step=current_step
+            )
         # Return the steps as a JSON response
-        return JsonResponse({'steps': steps_data})
+        return JsonResponse(step_data)
 
 
 class StepDetailView(views.APIView):
@@ -174,94 +218,6 @@ class StepDetailView(views.APIView):
 
         # Return the step as a JSON response
         return JsonResponse({'step': step_data})
-
-
-class TaskTestView(views.APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get(self, request, test_id):
-        try:
-            test = Test.objects.get(id=test_id)
-        except Test.DoesNotExist:
-            return JsonResponse({'error': 'Test does not exist'})
-
-        questions = []
-        for question in test.question_set.all():
-            answers = []
-            for answer in question.answer_set.all():
-                answers.append({
-                    'id': answer.id,
-                    'text': answer.text,
-                    'order_number': answer.order_number,
-                    'selected': None,
-                    'weight': answer.weight,
-                    'comment': answer.comment
-                })
-            questions.append({
-                'id': question.id,
-                'text': question.text,
-                'comment': question.comment,
-                'order_number': question.order_number,
-                'weight': question.weight,
-                'attachment_link': question.attachment_link,
-                'options': answers
-            })
-
-        if test.shuffle:
-            random.shuffle(questions)
-
-        data = {
-            'id': test.id,
-            'name': test.name,
-            'description': test.description,
-            'questions': questions
-        }
-
-        # Return the step as a JSON response
-        return JsonResponse(data)
-
-
-class CheckTaskTestView(views.APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def post(self, request, test_id):
-        
-        data = request.data
-        
-        result_score = calculate_test_results(data)
-        user = request.user
-        course = Course.objects.get(id=data['result']['course'])
-        course_topic = Topic.objects.get(id=data['result']['topic'])
-        lesson = Lesson.objects.get(id=data['result']['lesson'])
-        test = Test.objects.get(id=test_id)
-
-        user_answer, is_created = UserAnswer.objects.get_or_create(user=user, course=course, topic=course_topic, lesson=lesson, test=test)
-        user_answer.answers = data
-
-        # добавить логику сохранения максимального значения или последнего
-        user_answer.total_result = result_score
-        print(user_answer, is_created)
-
-        # Return the step as a JSON response
-        return JsonResponse({'status': 'ok'})
-
-
-class ResultsTaskTestView(views.APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    
-    def get(self, request, test_id):
-        user = request.user
-        test = Test.objects.get(id=test_id)
-
-        # Ищем ответы пользователя на заданный тест
-        user_answer = UserAnswer.objects.filter(user=user, test=test).first()
-
-        if user_answer:
-            # Если ответы найдены, возвращаем их в виде JSON
-            return JsonResponse(user_answer.answers)
-        else:
-            # Если ответы не найдены, возвращаем ошибку
-            return JsonResponse({'error': 'Answers not found'})
 
 
 # добавить метод получения статистик по всем разделам

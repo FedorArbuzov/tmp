@@ -19,6 +19,7 @@ from django.urls import path
 from users.views import views
 from users.views import breadrumbs_views
 from users.views import profile_views
+from users.views import test_views
 
 
 from rest_framework_simplejwt.views import (
@@ -36,11 +37,11 @@ urlpatterns = [
     path('profile/update_avatar', profile_views.ProfileAvatarView.as_view()),
     path('profile/courses/', views.ProfileCoursesView.as_view()),
     path('courses/<int:course_id>/', views.CourseDetailView.as_view(), name='course_detail'),
-    path('lessons/<int:lesson_id>/steps/', views.LessonStepsView.as_view(), name='lesson_steps'),
+    path('lessons/<int:lesson_id>/', views.LessonStepsView.as_view(), name='lesson_steps'),
     path('steps/<int:step_id>/', views.StepDetailView.as_view(), name='step_detail'),
-    path('test/<int:test_id>/', views.TaskTestView.as_view(), name='test_view'),
-    path('test/check/<int:test_id>/', views.CheckTaskTestView.as_view(), name='test_view'),
-    path('test/results/<int:test_id>/', views.ResultsTaskTestView.as_view(), name='test_view'),
+    path('test/<int:test_id>/', test_views.TaskTestView.as_view(), name='test_view'),
+    path('test/check/<int:test_id>/', test_views.CheckTaskTestView.as_view(), name='test_view'),
+    path('test/results/<int:test_id>/', test_views.ResultsTaskTestView.as_view(), name='test_view'),
     path('stats/', views.StatsView.as_view(), name='stats_view'),
     path('breadcrumbs/', breadrumbs_views.BreadcrumbsView.as_view(), name='breadcrumbs_view')
     # получить все степы по уроку

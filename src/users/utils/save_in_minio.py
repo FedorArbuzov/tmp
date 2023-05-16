@@ -1,9 +1,13 @@
+import random
+import string
+
 
 from minio import Minio
 from minio.error import S3Error
 
 def generate_random_name(n=5):
-    return 'qwerty'
+    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
+
 
 def save_avatar_in_minio(base64_file, file_name):
 
