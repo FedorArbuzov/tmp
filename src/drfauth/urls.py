@@ -20,6 +20,8 @@ from users.views import views
 from users.views import breadrumbs_views
 from users.views import profile_views
 from users.views import test_views
+from users.views import stats_views
+
 
 
 from rest_framework_simplejwt.views import (
@@ -35,6 +37,8 @@ urlpatterns = [
     path('logout/', views.LogoutView.as_view()),
     path('profile/', profile_views.ProfileView.as_view()),
     path('profile/update_avatar', profile_views.ProfileAvatarView.as_view()),
+    path('profile/stats_short/', stats_views.StatsView.as_view(), name='stats_view'),
+    path('profile/stats_detail/', stats_views.StatsDetailView.as_view(), name='stats_view'),
     path('profile/courses/', views.ProfileCoursesView.as_view()),
     path('courses/<int:course_id>/', views.CourseDetailView.as_view(), name='course_detail'),
     path('lessons/<int:lesson_id>/', views.LessonStepsView.as_view(), name='lesson_steps'),
