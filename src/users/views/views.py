@@ -97,8 +97,9 @@ class CourseDetailView(views.APIView):
                     'name': lesson.title,
                     'isOpened': True if steps_completed_length > 0 else False,
                     'isActive': True if last_user_answer.lesson == lesson else False,
-                    'total': steps_length,
-                    'completed': steps_completed_length,
+                    'isCompleted': True if steps_length == steps_completed_length else False,
+                    'totalTasks': steps_length,
+                    'completedTasks': steps_completed_length,
                     'description': lesson.description,
                 }
                 lessons_data.append(lesson_data)
