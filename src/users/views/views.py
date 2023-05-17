@@ -118,6 +118,43 @@ class CourseDetailView(views.APIView):
         return JsonResponse(topics_data, safe=False)
 
 
+class TopicDetailView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, topic_id):
+        # Get the course object based on the course_id parameter
+        topic = Topic.objects.get(id=topic_id)
+        user_answers = UserAnswer.objects.filter(user=request.user, topic=topic)
+        last_user_answer = user_answers.last()
+        # Get all the lessons for this topic
+        lessons = topic.lessons.all()
+        topic_steps_total = 0
+        topic_steps_complited = 0
+
+        # Convert the lessons to a list of dictionaries
+        lessons_data = []
+        for lesson in lessons:
+
+            steps_length = lesson.steps.count()
+            topic_steps_total += steps_length
+            steps_completed_length = user_answers.filter(lesson=lesson).count()
+            topic_steps_complited += steps_completed_length
+            lesson_data = {
+                'id': lesson.id,
+                'order_number': lesson.order_number,
+                'name': lesson.title,
+                'isOpened': True if steps_completed_length > 0 else False,
+                'isActive': True if last_user_answer.lesson == lesson else False,
+                'isCompleted': True if steps_length == steps_completed_length else False,
+                'totalTasks': steps_length,
+                'completedTasks': steps_completed_length,
+                'description': lesson.description,
+            }
+            lessons_data.append(lesson_data)
+
+        return JsonResponse(lessons_data, safe=False)
+
+
 def get_step_test(step, user):
     if not step.test:
         return None

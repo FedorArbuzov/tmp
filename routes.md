@@ -502,3 +502,140 @@ GET http://px-dev-backend.platonics.ru:8080/profile/stats_detail/
 ```
 
 Тут еще добавляется паравметр total_avg - среднее по ресурсу
+
+
+## Получение уроков для темы
+
+GET http://px-dev-backend.platonics.ru:8080/topic/1/
+
+```
+[
+    {
+        "id": 1,
+        "order_number": 0,
+        "name": "Introduction to Python",
+        "isOpened": true,
+        "isActive": true,
+        "isCompleted": false,
+        "totalTasks": 3,
+        "completedTasks": 6,
+        "description": "Learn about Python and the Python interpreter"
+    },
+    {
+        "id": 2,
+        "order_number": 1,
+        "name": "Variables and Data Types",
+        "isOpened": false,
+        "isActive": false,
+        "isCompleted": false,
+        "totalTasks": 2,
+        "completedTasks": 0,
+        "description": "Learn how to use variables and data types in Python"
+    }
+]
+```
+
+## Получение актуальных по теме 
+
+GET http://px-dev-backend.platonics.ru:8080/profile/actual/?topic_id=1
+
+```
+[
+    {
+        "id": 2,
+        "title": "Test 1",
+        "left_days": 109,
+        "left_attempts": 4
+    },
+    {
+        "id": 1,
+        "title": "Test 1",
+        "left_days": 111,
+        "left_attempts": 4
+    }
+]
+```
+
+Чтобы получить актуальные по теме нужно передать topic_id get параметром
+
+
+## Получение продвинутой статистики по курсу
+
+GET http://px-dev-backend.platonics.ru:8080/profile/stats_detail/?course_id=1
+
+```
+[
+    {
+        "title": "Python for Beginners",
+        "description": "Learn Python programming from scratch",
+        "completed_tests": 3,
+        "total_tests": 4,
+        "avg": 67,
+        "total_avg": 34
+    }
+]
+```
+
+
+## Получение продвинутой статистики по теме
+
+GET http://px-dev-backend.platonics.ru:8080/profile/stats_detail/?topic_id=1
+
+```
+[
+    {
+        "title": "Python for Beginners",
+        "description": "Learn Python programming from scratch",
+        "completed_tests": 3,
+        "total_tests": 4,
+        "avg": 67,
+        "total_avg": 34
+    }
+]
+```
+
+
+## Получение продвинутой статистики по уроку/теме/курсу
+
+GET http://px-dev-backend.platonics.ru:8080/profile/stats_detail/?lesson_id=1
+
+```
+[
+    {
+        "title": "Test 1",
+        "id": 1,
+        "user_percent": 55,
+        "group_percent": 40,
+        "date": "06.04.2023",
+        "time": "02:30:00",
+        "attempts": 2
+    },
+    {
+        "title": "Test 1",
+        "id": 2,
+        "user_percent": 55,
+        "group_percent": 40,
+        "date": "06.04.2023",
+        "time": "02:30:00",
+        "attempts": 2
+    },
+    {
+        "title": "Test 1",
+        "id": 3,
+        "user_percent": 55,
+        "group_percent": 40,
+        "date": "06.04.2023",
+        "time": "02:30:00",
+        "attempts": 2
+    },
+    {
+        "title": "Test 1",
+        "id": 4,
+        "user_percent": 55,
+        "group_percent": 40,
+        "date": "06.04.2023",
+        "time": "02:30:00",
+        "attempts": 2
+    }
+]
+```

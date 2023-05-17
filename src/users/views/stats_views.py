@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.db.models import Avg
 
 
-from users.models import UserAnswer, Course, Topic, Lesson, Step, StudentsGroup
+from users.models import UserAnswer, Course, Topic, Lesson, Step, StudentsGroup, Test
 
 def get_course_users(course):
     # Получаем все группы, связанные с курсом
@@ -64,6 +64,39 @@ def get_stats_for_course(course_id, user):
     # Возвращаем результат
     return average_total_result_by_topic
 
+def get_tasks_stats(tasks):
+    results = []
+    for task in tasks:
+        results.append({
+            'title': task.title,
+            'id': task.id,
+            'user_percent': 55,
+            'group_percent': 40,
+            'date': '06.04.2023',
+            'time': '02:30:00',
+            'attempts': 2
+        })
+    return JsonResponse(results, safe=False)
+
+
+def get_lesson_stats(user, lesson_id):
+    lesson = Lesson.objects.filter(id=lesson_id)
+    tasks = Test.objects.filter(step__lesson__in=lesson)
+    return get_tasks_stats(tasks)
+
+
+def get_topic_stats(user, topic_id):
+    topic = Topic.objects.filter(id=topic_id)
+    tasks = Test.objects.filter(step__lesson__topic__in=topic)
+    return get_tasks_stats(tasks)
+
+
+def get_course_stats(user, course_id):
+    course = Course.objects.filter(id=course_id)
+    tasks = Test.objects.filter(step__lesson__topic__course__in=course)
+    return get_tasks_stats(tasks)
+
+
 class StatsView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -82,8 +115,15 @@ class StatsDetailView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-        model_type = request.GET.get('model_type')
-        model_id = request.GET.get('model_type')
+        course_id = request.GET.get('course_id') 
+        topic_id = request.GET.get('topic_id')
+        lesson_id = request.GET.get('lesson_id')
+        if lesson_id:
+            return get_lesson_stats(request.user, lesson_id)
+        if topic_id:
+            return get_topic_stats(request.user, topic_id)
+        if course_id:
+            return get_course_stats(request.user, course_id)
         user = request.user
         courses = get_user_courses(user)
         results = []
