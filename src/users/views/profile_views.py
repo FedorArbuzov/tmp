@@ -44,8 +44,9 @@ class ProfileAvatarView(views.APIView):
     def post(self, request):
         student_info = StudentInfo.objects.get(user=request.user)
         # Получаем base64-строку файла из POST-запроса
-        base64_file = request.POST.get('file')
-        file_name = request.POST.get('file_name')
+        data = request.data
+        base64_file = data['file']
+        file_name = data['file_name']
         # Сохраняем файл в MinIO
         new_avatar_link = save_avatar_in_minio(base64_file, file_name)
         student_info.avatar = new_avatar_link
