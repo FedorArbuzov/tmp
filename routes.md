@@ -2,7 +2,7 @@
 
 ## Залогиниться
 
-POST http://px-dev-backend.platonics.ru:8080/login/
+POST http://px-dev-backend.platonics.ru:8000/login/
 
 ЗАПРОС
 ```
@@ -23,7 +23,7 @@ POST http://px-dev-backend.platonics.ru:8080/login/
 ```
 ## Получить все курсы пользователя
 
-GET http://px-dev-backend.platonics.ru:8080/profile/courses/
+GET http://px-dev-backend.platonics.ru:8000/profile/courses/
 
 ОТВЕТ
 
@@ -42,7 +42,7 @@ id берем и подставляем в следующий запрос
 
 ## Получить роадмап по курсу для пользователя
 
-GET http://px-dev-backend.platonics.ru:8080/courses/1/
+GET http://px-dev-backend.platonics.ru:8000/courses/1/
 
 ОТВЕТ
 
@@ -117,7 +117,7 @@ GET http://px-dev-backend.platonics.ru:8080/courses/1/
 
 Тут нужно взять id урока из роадмапа и подставить в запрос
 
-GET http://px-dev-backend.platonics.ru:8080/lessons/1/
+GET http://px-dev-backend.platonics.ru:8000/lessons/1/
 
 ```
 {
@@ -142,7 +142,7 @@ GET http://px-dev-backend.platonics.ru:8080/lessons/1/
 
 ## Получить конкретный шаг урока
 
-GET http://px-dev-backend.platonics.ru:8080/steps/1/
+GET http://px-dev-backend.platonics.ru:8000/steps/1/
 
 ```
 {
@@ -158,7 +158,7 @@ GET http://px-dev-backend.platonics.ru:8080/steps/1/
 
 ## Открыть тест
 
-GET http://px-dev-backend.platonics.ru:8080/test/1/
+GET http://px-dev-backend.platonics.ru:8000/test/1/
 
 ```
 {
@@ -263,7 +263,7 @@ GET http://px-dev-backend.platonics.ru:8080/test/1/
 
 ## Отправить ответ
 
-GET http://px-dev-backend.platonics.ru:8080/test/check/1/
+GET http://px-dev-backend.platonics.ru:8000/test/check/1/
 
 ```
 {
@@ -279,7 +279,7 @@ GET http://px-dev-backend.platonics.ru:8080/test/check/1/
 
 ## Посмотреть решения теста
 
-GET http://px-dev-backend.platonics.ru:8080/test/results/1/
+GET http://px-dev-backend.platonics.ru:8000/test/results/1/
 
 ```
 [
@@ -377,7 +377,7 @@ GET http://px-dev-backend.platonics.ru:8080/test/results/1/
 
 ## Получение бредкрампосов
 
-GET http://px-dev-backend.platonics.ru:8080/breadcrumbs?model_type=step&model_id=1
+GET http://px-dev-backend.platonics.ru:8000/breadcrumbs?model_type=step&model_id=1
 
 ```
 [
@@ -406,7 +406,7 @@ GET http://px-dev-backend.platonics.ru:8080/breadcrumbs?model_type=step&model_id
 
 ## Получение всех актуальных
 
-GET http://px-dev-backend.platonics.ru:8080/profile/actual/
+GET http://px-dev-backend.platonics.ru:8000/profile/actual/
 
 ```
 [
@@ -429,7 +429,7 @@ GET http://px-dev-backend.platonics.ru:8080/profile/actual/
 
 ## Получение базовой статистики на главной
 
-GET http://px-dev-backend.platonics.ru:8080/profile/stats_short/
+GET http://px-dev-backend.platonics.ru:8000/profile/stats_short/
 
 ```
 [
@@ -447,7 +447,7 @@ GET http://px-dev-backend.platonics.ru:8080/profile/stats_short/
 
 ## Получение информации о пользователе
 
-GET http://px-dev-backend.platonics.ru:8080/profile/
+GET http://px-dev-backend.platonics.ru:8000/profile/
 
 ```
 {
@@ -471,7 +471,7 @@ GET http://px-dev-backend.platonics.ru:8080/profile/
 
 ## Измениение/Добавление аватара
 
-POST http://px-dev-backend.platonics.ru:8080/profile/avatar/
+POST http://px-dev-backend.platonics.ru:8000/profile/avatar/
 
 ```
 {
@@ -482,11 +482,11 @@ POST http://px-dev-backend.platonics.ru:8080/profile/avatar/
 
 ## Удаление аватара
 
-DELETE http://px-dev-backend.platonics.ru:8080/profile/avatar/
+DELETE http://px-dev-backend.platonics.ru:8000/profile/avatar/
 
 ## Получение продвинутой статистики
 
-GET http://px-dev-backend.platonics.ru:8080/profile/stats_detail/
+GET http://px-dev-backend.platonics.ru:8000/profile/stats_detail/
 
 ```
 [
@@ -506,7 +506,7 @@ GET http://px-dev-backend.platonics.ru:8080/profile/stats_detail/
 
 ## Получение уроков для темы
 
-GET http://px-dev-backend.platonics.ru:8080/topic/1/
+GET http://px-dev-backend.platonics.ru:8000/topic/1/
 
 ```
 [
@@ -537,7 +537,7 @@ GET http://px-dev-backend.platonics.ru:8080/topic/1/
 
 ## Получение актуальных по теме 
 
-GET http://px-dev-backend.platonics.ru:8080/profile/actual/?topic_id=1
+GET http://px-dev-backend.platonics.ru:8000/profile/actual/?topic_id=1
 
 ```
 [
@@ -561,7 +561,7 @@ GET http://px-dev-backend.platonics.ru:8080/profile/actual/?topic_id=1
 
 ## Получение продвинутой статистики по курсу
 
-GET http://px-dev-backend.platonics.ru:8080/profile/stats_detail/?course_id=1
+GET http://px-dev-backend.platonics.ru:8000/profile/stats_detail/?course_id=1
 
 ```
 [
@@ -583,7 +583,7 @@ GET http://px-dev-backend.platonics.ru:8080/profile/stats_detail/?course_id=1
 
 ## Получение продвинутой статистики по теме
 
-GET http://px-dev-backend.platonics.ru:8080/profile/stats_detail/?topic_id=1
+GET http://px-dev-backend.platonics.ru:8000/profile/stats_detail/?topic_id=1
 
 ```
 [
@@ -601,7 +601,7 @@ GET http://px-dev-backend.platonics.ru:8080/profile/stats_detail/?topic_id=1
 
 ## Получение продвинутой статистики по уроку/теме/курсу
 
-GET http://px-dev-backend.platonics.ru:8080/profile/stats_detail/?lesson_id=1
+GET http://px-dev-backend.platonics.ru:8000/profile/stats_detail/?lesson_id=1
 
 ```
 [
@@ -646,7 +646,7 @@ GET http://px-dev-backend.platonics.ru:8080/profile/stats_detail/?lesson_id=1
 
 ## Получение выполненных тестов по теме
 
-GET http://px-dev-backend.platonics.ru:8080/topic/1/tests
+GET http://px-dev-backend.platonics.ru:8000/topic/1/tests
 
 ```
 [

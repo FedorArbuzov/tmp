@@ -16,6 +16,7 @@ class ProfileView(views.APIView):
         return JsonResponse({
             'avatar': student_info.avatar,
             'phone': student_info.phone,
+            'name': student_info.name,
             'mail': student_info.mail,
             'date_birth': student_info.date_birth,
             'responsible_1': {
