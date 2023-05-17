@@ -64,17 +64,19 @@ def get_stats_for_course(course_id, user):
     # Возвращаем результат
     return average_total_result_by_topic
 
-def get_tasks_stats(tasks):
+def get_tasks_stats(tasks, user):
     results = []
-    for task in tasks:
+    for test in tasks:
+        user_answer = UserAnswer.objects.filter(test=test, user=user).last()
+        print(user_answer.total_result)
         results.append({
-            'title': task.title,
-            'id': task.id,
+            'title': test.title,
+            'id': test.id,
             'user_percent': 55,
-            'group_percent': 40,
+            'group_percent': UserAnswer.objects.filter(test=test).aggregate(Avg('total_result'))['total_result__avg'],
             'date': '06.04.2023',
             'time': '02:30:00',
-            'attempts': 2
+            'attempts': UserAnswer.objects.filter(user=user, test=test).count()
         })
     return JsonResponse(results, safe=False)
 
@@ -82,19 +84,19 @@ def get_tasks_stats(tasks):
 def get_lesson_stats(user, lesson_id):
     lesson = Lesson.objects.filter(id=lesson_id)
     tasks = Test.objects.filter(step__lesson__in=lesson)
-    return get_tasks_stats(tasks)
+    return get_tasks_stats(tasks, user)
 
 
 def get_topic_stats(user, topic_id):
     topic = Topic.objects.filter(id=topic_id)
     tasks = Test.objects.filter(step__lesson__topic__in=topic)
-    return get_tasks_stats(tasks)
+    return get_tasks_stats(tasks, user)
 
 
 def get_course_stats(user, course_id):
     course = Course.objects.filter(id=course_id)
     tasks = Test.objects.filter(step__lesson__topic__course__in=course)
-    return get_tasks_stats(tasks)
+    return get_tasks_stats(tasks, user)
 
 
 class StatsView(views.APIView):

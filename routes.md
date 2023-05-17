@@ -576,6 +576,10 @@ GET http://px-dev-backend.platonics.ru:8080/profile/stats_detail/?course_id=1
 ]
 ```
 
+в stats_detail еще можно передать два get параметра для сортировок order_by (возможные значения: title, completed_tests, total_tests, avg, total_avg) 
+
+и order_by (возможные значения: asc, desc)
+
 
 ## Получение продвинутой статистики по теме
 
