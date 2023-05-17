@@ -1,31 +1,50 @@
 from rest_framework import views
 from rest_framework import permissions
 from django.http import JsonResponse
+from django.utils import timezone
+from django.db.models import Q, Count
 
 
-from users.models import StudentInfo
-
-from users.utils.save_in_minio import save_avatar_in_minio
+from users.models import Test, Topic, StudentsGroup, UserAnswer
 
 
-class ProfileView(views.APIView):
+def get_user_courses(user):
+    # Найти все группы, связанные с пользователем
+    groups = StudentsGroup.objects.filter(users=user)
+
+    # Создать пустой список для хранения программ
+    courses = []
+
+    # Пройти по всем группам и добавить все связанные с ними программы в список
+    for group in groups:
+        courses.extend(group.courses.all())
+
+    courses = set(courses)
+    return courses  
+
+
+class ActualView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-        student_info = StudentInfo.objects.get(user=request.user)
-        return JsonResponse({
-            'avatar': student_info.avatar,
-            'phone': student_info.phone,
-            'mail': student_info.mail,
-            'date_birth': student_info.date_birth,
-            'responsible_1': {
-                'full_name': student_info.responsible_1_fio,
-                'phone': student_info.responsible_1_phone,
-                'mail': student_info.responsible_1_mail
-            },
-            'responsible_2': {
-                'full_name': student_info.responsible_2_fio,
-                'phone': student_info.responsible_2_phone,
-                'mail': student_info.responsible_2_mail
-            }
-        })
+        current_date = timezone.now().date()
+        topic_id = request.GET.get('topic_id')
+        if topic_id is not None:
+            # если есть топик в параметрах то получаем актуальные только по нему
+            topics = Topic.objects.filter(id=topic_id)
+            query = Q(step__lesson__topic__in=topics)    
+        else:
+            # если топика нет, то достаем все задачи из курсов пользователя
+            courses = get_user_courses(request.user)
+            query = Q(step__lesson__topic__course__in=courses)
+        tests = Test.objects.filter(Q(end_date__gte=current_date) & query).order_by('end_date')
+        user_answers = UserAnswer.objects.filter(test__in=tests)
+        results = []
+        for test in tests:
+            results.append({
+                'id': test.id,
+                'title': test.title,
+                'left_days': (test.end_date - current_date).days,
+                'left_attempts': 4
+            })
+        return JsonResponse(results, safe=False)

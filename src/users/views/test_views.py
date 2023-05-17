@@ -111,14 +111,14 @@ class CheckTaskTestView(views.APIView):
         topic = lesson.topic
         course = topic.course
 
-        user_answer, is_created = UserAnswer.objects.get_or_create(user=user, course=course, topic=topic, lesson=lesson, step=step, test=test)
+        user_answer = UserAnswer.objects.create(user=user, course=course, topic=topic, lesson=lesson, step=step, test=test)
         user_answer.answers = questions_data
 
         # добавить логику сохранения максимального значения или последнего
         user_answer.total_result = result_score
         user_answer.time_spended = data['time_spended']
         user_answer.save()
-        print(user_answer, is_created)
+        print(user_answer)
 
         # Return the step as a JSON response
         return JsonResponse({'status': 'ok'})

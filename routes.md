@@ -288,6 +288,7 @@ GET http://px-dev-backend.platonics.ru:8080/test/results/1/
         "text": "Question 1",
         "media": "https://example.com/file1.pdf",
         "weight": 50,
+        "result": "Частично правильный",
         "comment": "Comment 1",
         "options": [
             {
@@ -374,3 +375,130 @@ GET http://px-dev-backend.platonics.ru:8080/test/results/1/
 ]
 ```
 
+## Получение бредкрампосов
+
+GET http://px-dev-backend.platonics.ru:8080/breadcrumbs?model_type=step&model_id=1
+
+```
+[
+    {
+        "title": "Python for Beginners",
+        "id": 1,
+        "type": "course"
+    },
+    {
+        "title": "Python Basics",
+        "id": 1,
+        "type": "topic"
+    },
+    {
+        "title": "Introduction to Python",
+        "id": 1,
+        "type": "lesson"
+    },
+    {
+        "title": "Declaring variables 1",
+        "id": 1,
+        "type": "step"
+    }
+]
+```
+
+## Получение всех актуальных
+
+GET http://px-dev-backend.platonics.ru:8080/profile/actual/
+
+```
+[
+    {
+        "id": 2,
+        "title": "Test 1",
+        "left_days": 109,
+        "left_attempts": 4
+    },
+    {
+        "id": 1,
+        "title": "Test 1",
+        "left_days": 111,
+        "left_attempts": 4
+    }
+]
+```
+
+Тут массив из актуальных заданий: получаем сколько осталось дней, сколько осталось попыток, id теста, и его название
+
+## Получение базовой статистики на главной
+
+GET http://px-dev-backend.platonics.ru:8080/profile/stats_short/
+
+```
+[
+    {
+        "title": "Python for Beginners",
+        "description": "Learn Python programming from scratch",
+        "completed_tests": 1,
+        "total_tests": 4,
+        "avg": 50
+    }
+]
+```
+
+Получаем массив объектов, где каждый массив это отдельный курс с числом сделанных тестов, всего тестов и среднего процента по тестам 
+
+## Получение информации о пользователе
+
+GET http://px-dev-backend.platonics.ru:8080/profile/
+
+```
+{
+    "avatar": null,
+    "phone": "333-33-33",
+    "mail": "mail1@example.com",
+    "date_birth": "2000-01-01",
+    "responsible_1": {
+        "full_name": "Responsible1 FIO",
+        "phone": "111-11-11",
+        "mail": "responsible1@example.com"
+    },
+    "responsible_2": {
+        "full_name": "Responsible2 FIO",
+        "phone": "222-22-22",
+        "mail": "responsible2@example.com"
+    }
+}
+```
+
+
+## Измениение/Добавление аватара
+
+POST http://px-dev-backend.platonics.ru:8080/profile/avatar/
+
+```
+{
+    "file": "...",
+    "file_name": "avatar.png"
+}
+```
+
+## Удаление аватара
+
+DELETE http://px-dev-backend.platonics.ru:8080/profile/avatar/
+
+## Получение продвинутой статистики
+
+GET http://px-dev-backend.platonics.ru:8080/profile/stats_detail/
+
+```
+[
+    {
+        "title": "Python for Beginners",
+        "description": "Learn Python programming from scratch",
+        "completed_tests": 3,
+        "total_tests": 4,
+        "avg": 67,
+        "total_avg": 34
+    }
+]
+```
+
+Тут еще добавляется паравметр total_avg - среднее по ресурсу

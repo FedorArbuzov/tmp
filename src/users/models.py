@@ -108,7 +108,7 @@ class StudentsGroup(models.Model):
 
 
 class StudentInfo(models.Model):
-    avatar = models.CharField(max_length=100, default=None)
+    avatar = models.CharField(max_length=100, default=None, null=True, blank=True)
     date_birth = models.DateField(default=None)
     mail = models.CharField(max_length=100, default=None)
     responsible_1_fio = models.CharField(max_length=100, default=None)
