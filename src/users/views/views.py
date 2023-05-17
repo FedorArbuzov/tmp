@@ -155,6 +155,27 @@ class TopicDetailView(views.APIView):
         return JsonResponse(lessons_data, safe=False)
 
 
+class TopicTestsView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, topic_id):
+        topic = Topic.objects.filter(id=topic_id)
+        tests = Test.objects.filter(step__lesson__topic__in=topic)
+        results = []
+        for test in tests:
+            user_answer = UserAnswer.objects.filter(test=test, user=request.user).last()
+            if not user_answer:
+                continue
+            results.append({
+                'title': test.title,
+                'percent': user_answer.total_result,
+                'allowed_attempts': test.attempts_number,
+                'used_attempts': UserAnswer.objects.filter(test=test, user=request.user).count()
+            })
+        return JsonResponse(results, safe=False)
+
+
+
 def get_step_test(step, user):
     if not step.test:
         return None

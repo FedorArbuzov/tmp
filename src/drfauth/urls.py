@@ -44,6 +44,7 @@ urlpatterns = [
     path('profile/courses/', views.ProfileCoursesView.as_view()),
     path('courses/<int:course_id>/', views.CourseDetailView.as_view(), name='course_detail'),
     path('topic/<int:topic_id>/', views.TopicDetailView.as_view(), name='course_detail'),
+    path('topic/<int:topic_id>/tests', views.TopicTestsView.as_view(), name='course_detail'),
     path('lessons/<int:lesson_id>/', views.LessonStepsView.as_view(), name='lesson_steps'),
     path('steps/<int:step_id>/', views.StepDetailView.as_view(), name='step_detail'),
     path('test/<int:test_id>/', test_views.TaskTestView.as_view(), name='test_view'),

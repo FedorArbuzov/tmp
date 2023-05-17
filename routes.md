@@ -639,3 +639,18 @@ GET http://px-dev-backend.platonics.ru:8080/profile/stats_detail/?lesson_id=1
     }
 ]
 ```
+
+## Получение выполненных тестов по теме
+
+GET http://px-dev-backend.platonics.ru:8080/topic/1/tests
+
+```
+[
+    {
+        "title": "Test 1",
+        "percent": 50,
+        "allowed_attempts": 3,
+        "used_attempts": 3
+    }
+]
+```
