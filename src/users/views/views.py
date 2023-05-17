@@ -11,6 +11,9 @@ from users import serializers
 from users.models import Course, StudentInfo, StudentsGroup, Course, Topic, Lesson, Step, Test, Question, UserAnswer
 from users.utils.count_total_test_weight import calculate_test_results
 
+from django.utils import timezone
+
+
 from django.http import JsonResponse
 
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -162,6 +165,7 @@ class TopicTestsView(views.APIView):
         topic = Topic.objects.filter(id=topic_id)
         tests = Test.objects.filter(step__lesson__topic__in=topic)
         results = []
+        current_date = timezone.now().date()
         for test in tests:
             user_answer = UserAnswer.objects.filter(test=test, user=request.user).last()
             if not user_answer:
@@ -170,6 +174,7 @@ class TopicTestsView(views.APIView):
                 'title': test.title,
                 'percent': user_answer.total_result,
                 'allowed_attempts': test.attempts_number,
+                'left_days': (test.end_date - current_date).days,
                 'used_attempts': UserAnswer.objects.filter(test=test, user=request.user).count()
             })
         return JsonResponse(results, safe=False)
