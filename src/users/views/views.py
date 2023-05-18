@@ -92,7 +92,7 @@ class CourseDetailView(views.APIView):
 
                 steps_length = lesson.steps.count()
                 topic_steps_total += steps_length
-                steps_completed_length = user_answers.filter(lesson=lesson).count()
+                steps_completed_length = user_answers.filter(lesson=lesson).values('step').distinct().count()
                 topic_steps_complited += steps_completed_length
                 lesson_data = {
                     'id': lesson.id,
