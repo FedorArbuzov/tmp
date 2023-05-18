@@ -84,6 +84,7 @@ class TaskTestView(views.APIView):
 
         data = {
             'id': test.id,
+            'step_id': test.step.id,
             'name': test.title,
             'description': test.description,
             'questions': questions

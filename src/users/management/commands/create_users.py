@@ -9,9 +9,9 @@ from users.management.commands.test_data import courses
 
 
 def create_test(step):
-    test1 = Test.objects.create(title='Test 1', description='Description 1', end_date=date(2023, 9, 2), attempts_number=3, assessment_method=True, shuffle=False, pub_date=timezone.now())
+    test1 = Test.objects.create(title='Test 1', description='Description 1', end_date=date(2023, 9, 2), attempts_number=45, assessment_method=True, shuffle=False, pub_date=timezone.now())
 
-    question1 = Question.objects.create(test=test1, text='Question 1', multiple=False, weight=50, comment='Comment 1', order_number=0, attachment_link='https://example.com/file1.pdf')
+    question1 = Question.objects.create(test=test1, text='Question 1', multiple=False, weight=50, comment='Comment 1', order_number=0, attachment_link='http://px-dev-s3.platonics.ru:9000/mybucket/NYIHI0HGF3.jpg')
     question2 = Question.objects.create(test=test1, text='Question 2', multiple=True, weight=50, comment='Comment 2', order_number=1)
 
     answer1 = Answer.objects.create(question=question1, text='Answer 1', weight=40, order_number=0, comment='Comment 1')

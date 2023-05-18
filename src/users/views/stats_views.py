@@ -38,13 +38,14 @@ def get_user_courses(user):
 def get_data_course_user(user, course):
     steps = Step.objects.filter(lesson__topic__course=course).exclude(test=None).values_list('id', flat=True)
     user_answers = UserAnswer.objects.filter(step__in=steps, user=user)
+    steps_completed_length = user_answers.filter(course=course).values('step').distinct().count()
     user_answers_avg = user_answers.aggregate(Avg('total_result'))['total_result__avg']
     return {
         'id': course.id,
         'image': course.image,
         'title': course.title,
         'description': course.description,
-        'completed_tests': user_answers.count(),
+        'completed_tests': steps_completed_length,
         'total_tests': steps.count(),
         'avg': round(user_answers_avg) if user_answers_avg else 0
     }
@@ -69,15 +70,22 @@ def get_stats_for_course(course_id, user):
 def get_tasks_stats(tasks, user):
     results = []
     for test in tasks:
+        user_percent = None
+        user_date = None
+        user_time = None
         user_answer = UserAnswer.objects.filter(test=test, user=user).last()
+        if user_answer:
+            user_percent = user_answer.total_result
+            user_date = user_answer.created_at.strftime('%d.%m.%Y')
+            user_time = user_answer.created_at.strftime('%H:%M:%S')
         results.append({
             'title': test.title,
             'id': test.id,
             'step_id': test.step.id,
-            'user_percent': 55,
+            'user_percent': user_percent,
             'group_percent': UserAnswer.objects.filter(test=test).aggregate(Avg('total_result'))['total_result__avg'],
-            'date': '06.04.2023',
-            'time': '02:30:00',
+            'date': user_date,
+            'time': user_time,
             'attempts': UserAnswer.objects.filter(user=user, test=test).count()
         })
     return JsonResponse(results, safe=False)
