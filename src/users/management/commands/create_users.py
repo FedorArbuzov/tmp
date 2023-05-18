@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from datetime import date
 from users.models import StudentInfo, Course, Lesson, Topic, StudentsGroup, Test, Question, Answer, Step, HtmlPage
 
+from users.management.commands.test_data import courses
+
 
 def create_test(step):
     test1 = Test.objects.create(title='Test 1', description='Description 1', end_date=date(2023, 9, 2), attempts_number=3, assessment_method=True, shuffle=False, pub_date=timezone.now())
@@ -108,39 +110,33 @@ class Command(BaseCommand):
             user=user2,
         )
 
-        # Create a new course
-        course = Course.objects.create(
-            title='Python for Beginners',
-            description='Learn Python programming from scratch',
-            image='https://example.com/python.jpg',
-        )
-
-        # Create some topics for the course
-        topic1 = Topic.objects.create(
-            course=course,
-            title='Python Basics',
-            description='Learn the basics of Python programming',
-            image='https://example.com/python-basics.jpg',
-        )
-
-        create_content_for_topic(topic1)
-
-        topic2 = Topic.objects.create(
-            course=course,
-            title='Functions and Loops',
-            description='Learn how to use functions and loops in Python',
-            image='https://example.com/functions-loops.jpg',
-        )
-
-        create_content_for_topic(topic2)
-
         students_group = StudentsGroup.objects.create(
             title='5б',
         )
 
         students_group.users.add(user1)
         students_group.users.add(user2)
-        students_group.courses.add(course)
+
+        for course_data in courses:
+            course = Course.objects.create(
+                title=course_data['title'],
+                description=course_data['description'],
+                image=course_data['image'],
+            )
+
+            for topic_data in course_data['topics']:
+                topic = Topic.objects.create(
+                    course=course,
+                    title=topic_data['title'],
+                    description=topic_data['description'],
+                    image=topic_data['image'],
+                )
+
+                create_content_for_topic(topic)
+
+            students_group.courses.add(course)
+
+
 
 
 
