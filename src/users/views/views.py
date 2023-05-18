@@ -254,9 +254,9 @@ def get_step_id_or_none(lesson, order):
 
 def get_step_data(step, user):
     return {
-        'previous': get_step_id_or_none(step.lesson, step.order_number - 1),
+        'previous_step_id': get_step_id_or_none(step.lesson, step.order_number - 1),
         'steps_count': step.lesson.steps.count(),
-        'next': step.id + 1,
+        'next_step_id': step.id + 1,
         'id': step.id,
         'order_number': step.order_number,
         'title': step.title,
