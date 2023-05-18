@@ -137,7 +137,7 @@ class ResultsTaskTestView(views.APIView):
 
         if user_answer:
             # Если ответы найдены, возвращаем их в виде JSON
-            return JsonResponse(user_answer.answers, safe=False)
+            return JsonResponse({'answers': user_answer.answers, 'step_id': test.step.id})
         else:
             # Если ответы не найдены, возвращаем ошибку
             return JsonResponse({'error': 'Answers not found'})
