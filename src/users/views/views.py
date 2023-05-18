@@ -172,6 +172,7 @@ class TopicTestsView(views.APIView):
                 continue
             results.append({
                 'title': test.title,
+                'id': test.id,
                 'percent': user_answer.total_result,
                 'allowed_attempts': test.attempts_number,
                 'left_days': (test.end_date - current_date).days,
