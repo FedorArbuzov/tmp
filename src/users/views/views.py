@@ -228,6 +228,11 @@ def get_step_test(step, user):
     if not step.test:
         return None
     answer = UserAnswer.objects.filter(user=user, test=step.test)
+    time_spended = None
+    total_result = None
+    if answer.last():
+        time_spended = answer.last().time_spended
+        total_result = answer.last().total_result
     return {
         'id': step.test.id,
         'title': step.test.title,
@@ -235,8 +240,8 @@ def get_step_test(step, user):
         'attempts_number': step.test.attempts_number,
         'attempts_number_used': len(answer),
         'num_of_questions': Question.objects.filter(test=step.test).count(),
-        'time_spended': answer.time_spended,
-        'perсent': answer.total_result
+        'time_spended': time_spended,
+        'perсent': total_result
     }
 
 def get_step_id_or_none(lesson, order):
