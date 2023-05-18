@@ -255,9 +255,10 @@ def get_step_id_or_none(lesson, order):
 def get_step_data(step, user):
     print(step)
     return {
-        'previous': get_step_id_or_none(step.lesson, step.order_number - 1),
+        'previous': step.id + 1,
         'next': get_step_id_or_none(step.lesson, step.order_number + 1),
         'id': step.id,
+        'title': step.title,
         'html': None if not step.html else step.html.content,
         'test': get_step_test(step, user)
     }
