@@ -253,7 +253,6 @@ def get_step_id_or_none(lesson, order):
 
 
 def get_step_data(step, user):
-    print(step)
     return {
         'previous': get_step_id_or_none(step.lesson, step.order_number - 1),
         'steps_count': step.lesson.steps.count(),
