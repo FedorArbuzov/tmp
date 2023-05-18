@@ -93,12 +93,30 @@ class CourseDetailView(views.APIView):
             lessons_data = []
             for lesson in lessons:
 
+                # Get all the steps for this lesson
+                steps = lesson.steps.all()
+
+                # Convert the steps to a list of dictionaries
+                step_data = {}
+                for step in steps:
+                    is_step_done = user_answers.filter(step=step)
+                    if len(is_step_done) > 0:
+                        continue
+                    else:
+                        step_data = step
+                        break
+
+                if not step_data:
+                    step_data = step
+
+
                 steps_length = lesson.steps.count()
                 topic_steps_total += steps_length
                 steps_completed_length = user_answers.filter(lesson=lesson).values('step').distinct().count()
                 topic_steps_complited += steps_completed_length
                 lesson_data = {
                     'id': lesson.id,
+                    'step_id': step_data.id,
                     'order_number': lesson.order_number,
                     'name': lesson.title,
                     'isOpened': True if steps_completed_length > 0 else False,
@@ -148,8 +166,25 @@ class TopicDetailView(views.APIView):
             topic_steps_total += steps_length
             steps_completed_length = user_answers.filter(lesson=lesson).values('step').distinct().count()
             topic_steps_complited += steps_completed_length
+            # Get all the steps for this lesson
+            steps = lesson.steps.all()
+
+            # Convert the steps to a list of dictionaries
+            step_data = {}
+            for step in steps:
+                is_step_done = user_answers.filter(step=step)
+                if len(is_step_done) > 0:
+                    continue
+                else:
+                    step_data = step
+                    break
+
+            if not step_data:
+                step_data = step
+
             lesson_data = {
                 'id': lesson.id,
+                'step_id': step_data.id,
                 'order_number': lesson.order_number,
                 'name': lesson.title,
                 'isOpened': True if steps_completed_length > 0 else False,
@@ -192,7 +227,7 @@ class TopicTestsView(views.APIView):
 def get_step_test(step, user):
     if not step.test:
         return None
-    answer = UserAnswer.objects.filter(user=user, test=step.test).last()
+    answer = UserAnswer.objects.filter(user=user, test=step.test)
     return {
         'id': step.test.id,
         'title': step.test.title,
