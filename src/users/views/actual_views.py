@@ -44,6 +44,7 @@ class ActualView(views.APIView):
             results.append({
                 'id': test.id,
                 'title': test.title,
+                'description': test.description,
                 'left_days': (test.end_date - current_date).days,
                 'left_attempts': 4
             })

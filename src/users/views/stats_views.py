@@ -40,6 +40,8 @@ def get_data_course_user(user, course):
     user_answers = UserAnswer.objects.filter(step__in=steps, user=user)
     user_answers_avg = user_answers.aggregate(Avg('total_result'))['total_result__avg']
     return {
+        'id': course.id,
+        'image': course.image,
         'title': course.title,
         'description': course.description,
         'completed_tests': user_answers.count(),
@@ -120,6 +122,8 @@ class StatsDetailView(views.APIView):
         course_id = request.GET.get('course_id') 
         topic_id = request.GET.get('topic_id')
         lesson_id = request.GET.get('lesson_id')
+        order_by = request.GET.get('order_by')
+        order_type = request.GET.get('order_type')
         if lesson_id:
             return get_lesson_stats(request.user, lesson_id)
         if topic_id:
