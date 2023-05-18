@@ -659,3 +659,47 @@ GET http://px-dev-backend.platonics.ru:8000/topic/1/tests
     }
 ]
 ```
+
+
+## Получить актуальные по курсам
+
+GET http://px-dev-backend.platonics.ru:8000/profile/actual/courses/
+
+```
+[
+    {
+        "id": 1,
+        "title": "Python for Beginners",
+        "tasks": [
+            {
+                "id": 2,
+                "title": "Test 1",
+                "description": "Description 1",
+                "left_days": 107,
+                "left_attempts": 4
+            },
+            {
+                "id": 3,
+                "title": "Test 1",
+                "description": "Description 1",
+                "left_days": 107,
+                "left_attempts": 4
+            },
+            {
+                "id": 4,
+                "title": "Test 1",
+                "description": "Description 1",
+                "left_days": 107,
+                "left_attempts": 4
+            },
+            {
+                "id": 1,
+                "title": "Test 1",
+                "description": "Description 1",
+                "left_days": 109,
+                "left_attempts": 4
+            }
+        ]
+    }
+]
+```

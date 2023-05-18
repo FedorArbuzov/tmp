@@ -49,3 +49,31 @@ class ActualView(views.APIView):
                 'left_attempts': 4
             })
         return JsonResponse(results, safe=False)
+
+
+class ActualCoursesView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        courses = get_user_courses(request.user)
+        current_date = timezone.now().date()
+        results = []
+        for course in courses:
+            tests = Test.objects.filter(Q(end_date__gte=current_date) & 
+                Q(step__lesson__topic__course_id__in=[course])).order_by('end_date')
+            course_results = []
+            for test in tests:
+                course_results.append({
+                    'id': test.id,
+                    'title': test.title,
+                    'description': test.description,
+                    'left_days': (test.end_date - current_date).days,
+                    'left_attempts': 4
+                })
+            results.append({
+                'id': course.id,
+                'title': course.title,
+                'tasks': course_results
+            })
+        
+        return JsonResponse(results, safe=False)

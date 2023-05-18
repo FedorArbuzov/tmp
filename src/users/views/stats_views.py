@@ -70,7 +70,6 @@ def get_tasks_stats(tasks, user):
     results = []
     for test in tasks:
         user_answer = UserAnswer.objects.filter(test=test, user=user).last()
-        print(user_answer.total_result)
         results.append({
             'title': test.title,
             'id': test.id,

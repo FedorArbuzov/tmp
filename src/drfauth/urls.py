@@ -40,6 +40,7 @@ urlpatterns = [
     path('profile/avatar/', profile_views.ProfileAvatarView.as_view()),
     path('profile/stats_short/', stats_views.StatsView.as_view(), name='stats_view'),
     path('profile/actual/', actual_views.ActualView.as_view(), name='actual_view'),
+    path('profile/actual/courses/', actual_views.ActualCoursesView.as_view(), name='actual_view'),
     path('profile/stats_detail/', stats_views.StatsDetailView.as_view(), name='stats_view'),
     path('profile/courses/', views.ProfileCoursesView.as_view()),
     path('courses/<int:course_id>/', views.CourseDetailView.as_view(), name='course_detail'),
