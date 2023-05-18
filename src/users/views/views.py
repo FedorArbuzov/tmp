@@ -74,6 +74,9 @@ class CourseDetailView(views.APIView):
         course = Course.objects.get(id=course_id)
         user_answers = UserAnswer.objects.filter(user=request.user, course=course)
         last_user_answer = user_answers.last()
+        last_user_answer_lesson = None
+        if last_user_answer is not None:
+            last_user_answer_lesson = last_user_answer.lesson
 
         # Get all the topics for this course
         topics = course.topics.all()
@@ -99,7 +102,7 @@ class CourseDetailView(views.APIView):
                     'order_number': lesson.order_number,
                     'name': lesson.title,
                     'isOpened': True if steps_completed_length > 0 else False,
-                    'isActive': True if last_user_answer.lesson == lesson else False,
+                    'isActive': True if last_user_answer_lesson == lesson else False,
                     'isCompleted': True if steps_length == steps_completed_length else False,
                     'totalTasks': steps_length,
                     'completedTasks': steps_completed_length,
@@ -129,6 +132,9 @@ class TopicDetailView(views.APIView):
         topic = Topic.objects.get(id=topic_id)
         user_answers = UserAnswer.objects.filter(user=request.user, topic=topic)
         last_user_answer = user_answers.last()
+        last_user_answer_lesson = None
+        if last_user_answer is not None:
+            last_user_answer_lesson = last_user_answer.lesson
         # Get all the lessons for this topic
         lessons = topic.lessons.all()
         topic_steps_total = 0
@@ -147,7 +153,7 @@ class TopicDetailView(views.APIView):
                 'order_number': lesson.order_number,
                 'name': lesson.title,
                 'isOpened': True if steps_completed_length > 0 else False,
-                'isActive': True if last_user_answer.lesson == lesson else False,
+                'isActive': True if last_user_answer_lesson == lesson else False,
                 'isCompleted': True if steps_length == steps_completed_length else False,
                 'totalTasks': steps_length,
                 'completedTasks': steps_completed_length,
@@ -173,6 +179,7 @@ class TopicTestsView(views.APIView):
             results.append({
                 'title': test.title,
                 'id': test.id,
+                'step_id': test.step.id,
                 'percent': user_answer.total_result,
                 'allowed_attempts': test.attempts_number,
                 'left_days': (test.end_date - current_date).days,

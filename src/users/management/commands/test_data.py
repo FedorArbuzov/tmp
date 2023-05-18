@@ -1,8 +1,8 @@
 courses = [
     {
-        'title': 'Python for Beginners',
+        'title': 'Русский язык',
         'description': 'Learn Python programming from scratch',
-        'image': 'https://example.com/python.jpg',
+        'image': 'http://px-dev-s3.platonics.ru:9000/mybucket/NYIHI0HGF3.jpg',
         'topics': [
             {
                 'title': 'Python Basics',
@@ -70,9 +70,9 @@ courses = [
         ]
     },
     {
-        'title': 'Web Development',
+        'title': 'Математика',
         'description': 'Learn web development from scratch',
-        'image': 'https://example.com/web-dev.jpg',
+        'image': 'http://px-dev-s3.platonics.ru:9000/mybucket/NYIHI0HGF3.jpg',
         'topics': [
             {
                 'title': 'HTML Basics',
@@ -168,9 +168,9 @@ courses = [
         ]
     },  
     {
-        'title': 'Data Science',
+        'title': 'Литература',
         'description': 'Learn data science from scratch',
-        'image': 'https://example.com/data-science.jpg',
+        'image': 'http://px-dev-s3.platonics.ru:9000/mybucket/NYIHI0HGF3.jpg',
         'topics': [
             {
                 'title': 'Introduction to Data Science',
@@ -266,9 +266,9 @@ courses = [
         ]
     },
     {
-        'title': 'Mobile App Development',
+        'title': 'Информатика',
         'description': 'Learn how to build mobile apps',
-        'image': 'https://example.com/mobile-app-dev.jpg',
+        'image': 'http://px-dev-s3.platonics.ru:9000/mybucket/NYIHI0HGF3.jpg',
         'topics': [
             {
                 'title': 'Introduction to Mobile App Development',

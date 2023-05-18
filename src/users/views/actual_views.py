@@ -44,6 +44,7 @@ class ActualView(views.APIView):
             results.append({
                 'id': test.id,
                 'title': test.title,
+                'step_id': test.step.id,
                 'description': test.description,
                 'left_days': (test.end_date - current_date).days,
                 'left_attempts': 4
@@ -66,6 +67,7 @@ class ActualCoursesView(views.APIView):
                 course_results.append({
                     'id': test.id,
                     'title': test.title,
+                    'step_id': test.step.id,
                     'description': test.description,
                     'left_days': (test.end_date - current_date).days,
                     'left_attempts': 4

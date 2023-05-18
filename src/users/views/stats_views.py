@@ -73,6 +73,7 @@ def get_tasks_stats(tasks, user):
         results.append({
             'title': test.title,
             'id': test.id,
+            'step_id': test.step.id,
             'user_percent': 55,
             'group_percent': UserAnswer.objects.filter(test=test).aggregate(Avg('total_result'))['total_result__avg'],
             'date': '06.04.2023',
