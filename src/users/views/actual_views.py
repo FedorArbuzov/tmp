@@ -41,6 +41,8 @@ class ActualView(views.APIView):
         user_answers = UserAnswer.objects.filter(test__in=tests)
         results = []
         for test in tests:
+            if user_answers.filter(test=test).last() is None:
+                continue
             results.append({
                 'id': test.id,
                 'title': test.title,
@@ -64,6 +66,9 @@ class ActualCoursesView(views.APIView):
                 Q(step__lesson__topic__course_id__in=[course])).order_by('end_date')
             course_results = []
             for test in tests:
+                user_answer = UserAnswer.objects.filter(test=test, user=request.user).last()
+                if user_answer is not None:
+                    continue
                 course_results.append({
                     'id': test.id,
                     'title': test.title,
