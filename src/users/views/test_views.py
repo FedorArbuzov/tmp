@@ -122,7 +122,7 @@ class CheckTaskTestView(views.APIView):
         print(user_answer)
 
         # Return the step as a JSON response
-        return JsonResponse({'status': 'ok'})
+        return JsonResponse({'status': 'ok', 'step': step.id})
 
 
 class ResultsTaskTestView(views.APIView):
