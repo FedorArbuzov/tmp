@@ -14,10 +14,10 @@ def create_test(step):
     question1 = Question.objects.create(test=test1, text='Question 1', multiple=False, weight=50, comment='Comment 1', order_number=0, attachment_link='http://px-dev-s3.platonics.ru:9000/mybucket/NYIHI0HGF3.jpg')
     question2 = Question.objects.create(test=test1, text='Question 2', multiple=True, weight=50, comment='Comment 2', order_number=1)
 
-    answer1 = Answer.objects.create(question=question1, text='Answer 1', weight=40, order_number=0, comment='Comment 1')
-    answer2 = Answer.objects.create(question=question1, text='Answer 2', weight=-50, order_number=1, comment='Comment 2')
-    answer3 = Answer.objects.create(question=question1, text='Answer 3', weight=60, order_number=2, comment='Comment 3')
-    answer4 = Answer.objects.create(question=question1, text='Answer 4', weight=-50, order_number=3, comment='Comment 4')
+    answer1 = Answer.objects.create(question=question1, text='Answer 1', weight=100, order_number=0, comment='Comment 1')
+    answer2 = Answer.objects.create(question=question1, text='Answer 2', weight=0, order_number=1, comment='Comment 2')
+    answer3 = Answer.objects.create(question=question1, text='Answer 3', weight=0, order_number=2, comment='Comment 3')
+    answer4 = Answer.objects.create(question=question1, text='Answer 4', weight=0, order_number=3, comment='Comment 4')
 
     answer5 = Answer.objects.create(question=question2, text='Answer 5', weight=30, order_number=0, comment='Comment 1')
     answer6 = Answer.objects.create(question=question2, text='Answer 6', weight=-20, order_number=1, comment='Comment 2')

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from rest_framework import views
 from rest_framework import permissions
 from django.http import JsonResponse
@@ -67,11 +69,11 @@ def get_stats_for_course(course_id, user):
     # Возвращаем результат
     return average_total_result_by_topic
 
-def get_tasks_stats(tasks, user):
+def get_tasks_stats(tasks, user, order_by, order_type):
     results = []
     for test in tasks:
         user_percent = None
-        user_date = None
+        user_date = None    
         user_time = None
         user_answer = UserAnswer.objects.filter(test=test, user=user).last()
         if user_answer:
@@ -88,25 +90,40 @@ def get_tasks_stats(tasks, user):
             'time': user_time,
             'attempts': UserAnswer.objects.filter(user=user, test=test).count()
         })
+    if order_by in ('title', 'id', 'attempts'):
+        results = sorted(results, key=lambda x: x[order_by], reverse=order_type)
+    if order_by in ('user_percent', 'group_percent'):
+        results = sorted(results, key=lambda x: x[order_by] if x[order_by] is not None else 0, reverse=order_type)
+    if order_by in ('date'):
+        results = sorted(results, key=lambda x: (datetime.strptime(x[order_by], '%d.%m.%Y') if x[order_by] is not None else datetime.max), reverse=order_type)
+    if order_by in ('time'):
+        results = sorted(results, key=lambda x: convert_to_number(x), reverse=order_type)
+
     return JsonResponse(results, safe=False)
 
 
-def get_lesson_stats(user, lesson_id):
+def get_lesson_stats(user, lesson_id, order_by, order_type):
     lesson = Lesson.objects.filter(id=lesson_id)
     tasks = Test.objects.filter(step__lesson__in=lesson)
-    return get_tasks_stats(tasks, user)
+    return get_tasks_stats(tasks, user, order_by, order_type)
 
 
-def get_topic_stats(user, topic_id):
+def get_topic_stats(user, topic_id, order_by, order_type):
     topic = Topic.objects.filter(id=topic_id)
     tasks = Test.objects.filter(step__lesson__topic__in=topic)
-    return get_tasks_stats(tasks, user)
+    return get_tasks_stats(tasks, user, order_by, order_type)
 
 
-def get_course_stats(user, course_id):
+def get_course_stats(user, course_id, order_by, order_type):
     course = Course.objects.filter(id=course_id)
     tasks = Test.objects.filter(step__lesson__topic__course__in=course)
-    return get_tasks_stats(tasks, user)
+    return get_tasks_stats(tasks, user, order_by, order_type)
+
+def convert_to_number(time_str):
+    if time_str is None:
+        return None
+    hours, minutes, seconds = map(int, time_str.split('.'))
+    return (hours * 60 * 60 + minutes * 60) + seconds
 
 
 class StatsView(views.APIView):
@@ -132,12 +149,17 @@ class StatsDetailView(views.APIView):
         lesson_id = request.GET.get('lesson_id')
         order_by = request.GET.get('order_by')
         order_type = request.GET.get('order_type')
+        if order_type: 
+            if order_type == 'desc':
+                order_type = True
+            else:
+                order_type = False
         if lesson_id:
-            return get_lesson_stats(request.user, lesson_id)
+            return get_lesson_stats(request.user, lesson_id, order_by, order_type)
         if topic_id:
-            return get_topic_stats(request.user, topic_id)
+            return get_topic_stats(request.user, topic_id, order_by, order_type)
         if course_id:
-            return get_course_stats(request.user, course_id)
+            return get_course_stats(request.user, course_id, order_by, order_type)
         user = request.user
         courses = get_user_courses(user)
         results = []
@@ -153,5 +175,8 @@ class StatsDetailView(views.APIView):
 
             user_results['total_avg'] = round(course_avg / len(users))     
             results.append(user_results)
+        # avg, total_avg, total_tests, completed_tests, title
+        if order_by:
+            results = sorted(results, key=lambda x: x[order_by], reverse=order_type)
         
         return JsonResponse(results, safe=False)
